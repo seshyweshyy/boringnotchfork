@@ -85,15 +85,7 @@ struct InlineHUD: View {
                                 BrightnessManager.shared.setAbsolute(value: Float32(v))
                             }
                         })
-                        if (type == .volume && value.isZero) {
-                            Text("muted")
-                                .font(.caption)
-                                .fontWeight(.medium)
-                                .foregroundStyle(.gray)
-                                .lineLimit(1)
-                                .allowsTightening(true)
-                                .multilineTextAlignment(.trailing)
-                        } else if Defaults[.showClosedNotchHUDPercentage] {
+                        if Defaults[.showClosedNotchHUDPercentage] {
                             Text("\(Int(value * 100))%")
                                 .font(.caption)
                                 .fontWeight(.medium)

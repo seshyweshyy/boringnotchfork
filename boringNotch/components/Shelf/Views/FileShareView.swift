@@ -41,12 +41,12 @@ struct FileShareView: View {
 
     private var dropArea: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: 32)
                 .fill(
                     LinearGradient(colors: [Color.black.opacity(0.35), Color.black.opacity(0.20)], startPoint: .topLeading, endPoint: .bottomTrailing)
                 )
                 .overlay(
-                    RoundedRectangle(cornerRadius: 12)
+                    RoundedRectangle(cornerRadius: 32)
                         .stroke(
                             vm.dropZoneTargeting
                                 ? Color.accentColor.opacity(0.9)

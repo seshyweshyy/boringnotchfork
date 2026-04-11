@@ -25,7 +25,7 @@ struct HoverButton: View {
                 .contentShape(Rectangle())
                 .frame(width: size, height: size)
                 .overlay {
-                    Capsule()
+                    RoundedRectangle(cornerRadius: 11)
                         .fill(isHovering ? Color.gray.opacity(0.2) : .clear)
                         .frame(width: size, height: size)
                         .overlay {

@@ -241,7 +241,7 @@ struct MusicControlsView: View {
     private func slotView(for slot: MusicControlButton) -> some View {
         switch slot {
         case .shuffle:
-            HoverButton(icon: "shuffle", iconColor: musicManager.isShuffled ? .red : .primary, scale: .medium) {
+            HoverButton(icon: "shuffle", iconColor: musicManager.isShuffled ? .effectiveAccent : .primary, scale: .medium) {
                 MusicManager.shared.toggleShuffle()
             }
         case .previous:
@@ -293,7 +293,7 @@ struct MusicControlsView: View {
         case .off:
             return .primary
         case .all, .one:
-            return .red
+            return .effectiveAccent
         }
     }
 }
@@ -314,7 +314,7 @@ struct FavoriteControlButton: View {
     }
 
     private var iconColor: Color {
-        musicManager.isFavoriteTrack ? .red : .primary
+        musicManager.isFavoriteTrack ? .effectiveAccent : .primary
     }
 }
 
