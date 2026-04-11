@@ -33,6 +33,9 @@ struct SettingsView: View {
                 NavigationLink(value: "Appearance") {
                     Label("Appearance", systemImage: "eye")
                 }
+                //NavigationLink(value: "Widgets") {
+                //  Label("Widgets", systemImage: "rectangle.3.group")
+                //}
                 NavigationLink(value: "Media") {
                     Label("Media", systemImage: "play.laptopcomputer")
                 }
@@ -75,6 +78,8 @@ struct SettingsView: View {
                     GeneralSettings()
                 case "Appearance":
                     Appearance()
+                case "Widgets":
+                    Widgets()
                 case "Media":
                     Media()
                 case "Calendar":
@@ -1406,6 +1411,35 @@ struct Appearance: View {
         }
 
         return false
+    }
+}
+
+struct Widgets: View {
+    @Default(.showCalendar) var showCalendar
+    @Default(.showMirror) var showMirror
+    @ObservedObject var coordinator = BoringViewCoordinator.shared
+
+    var body: some View {
+        Form {
+            Section {
+                Toggle("Music player", isOn: $coordinator.musicLiveActivityEnabled.animation())
+                Defaults.Toggle(key: .showCalendar) {
+                    Text("Calendar")
+                }
+                Defaults.Toggle(key: .showMirror) {
+                    Text("Mirror (camera)")
+                }
+                    .disabled(AVCaptureDevice.default(for: .video) == nil)
+            } header: {
+                Text("Expanded notch widgets")
+            } footer: {
+                Text("Choose which widgets are shown when the notch is open.")
+                    .foregroundStyle(.secondary)
+                    .font(.caption)
+            }
+        }
+        .accentColor(.effectiveAccent)
+        .navigationTitle("Widgets")
     }
 }
 

@@ -54,7 +54,9 @@ struct ContentView: View {
             topCornerRadius: topCornerRadius,
             bottomCornerRadius: ((vm.notchState == .open) && Defaults[.cornerRadiusScaling])
                 ? cornerRadiusInsets.opened.bottom
-                : cornerRadiusInsets.closed.bottom
+                : coordinator.sneakPeek.show && coordinator.sneakPeek.type == .music
+                    ? 22  // rounder when sneak peek is visible
+                    : cornerRadiusInsets.closed.bottom
         )
     }
 
@@ -190,16 +192,14 @@ struct ContentView: View {
                         } label: {
                             Label("Settings", systemImage: "gear")
                         }
-                        .keyboardShortcut(KeyEquivalent(","), modifiers: .command)
                         
                         Divider()
                         
                         Button {
                             NSApp.terminate(nil)
                         } label: {
-                            Label("Quit boring.notch", systemImage: "xmark.rectangle")
+                            Label("Quit Boring Notch", systemImage: "xmark.rectangle")
                         }
-                        .keyboardShortcut("q", modifiers: [.command, .shift])
                     }
                 if vm.chinHeight > 0 {
                     Rectangle()

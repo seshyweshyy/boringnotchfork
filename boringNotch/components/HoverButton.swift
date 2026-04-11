@@ -17,7 +17,7 @@ struct HoverButton: View {
     @State private var isHovering = false
 
     var body: some View {
-        let size = CGFloat(scale == .large ? 40 : 30)
+        let size = CGFloat(40)
         
         Button(action: action) {
             Rectangle()
@@ -32,7 +32,7 @@ struct HoverButton: View {
                             Image(systemName: icon)
                                 .foregroundColor(iconColor)
                                 .contentTransition(contentTransition)
-                                .font(scale == .large ? .largeTitle : .body)
+                                .font(scale == .large ? .largeTitle : scale == .small ? .title3 : .title2)
                         }
                 }
         }

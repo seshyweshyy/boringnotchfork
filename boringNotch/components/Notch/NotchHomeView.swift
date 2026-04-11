@@ -440,29 +440,33 @@ struct NotchHomeView: View {
     }
 
     private var mainContent: some View {
-        HStack(alignment: .top, spacing: (shouldShowCamera && Defaults[.showCalendar]) ? 10 : 15) {
-            MusicPlayerView(albumArtNamespace: albumArtNamespace)
+        let showMusic = coordinator.musicLiveActivityEnabled
+        let showCal = Defaults[.showCalendar]
+        let showCam = shouldShowCamera
+        let activeCount = (showMusic ? 1 : 0) + (showCal ? 1 : 0) + (showCam ? 1 : 0)
 
-            if Defaults[.showCalendar] {
+        return HStack(alignment: .top, spacing: (showCam && showCal) ? 10 : 15) {
+            if showMusic {
+                MusicPlayerView(albumArtNamespace: albumArtNamespace)
+            }
+            if showCal {
                 CalendarView()
-                    .frame(width: shouldShowCamera ? 170 : 215)
+                    .frame(width: showCam ? 170 : 215)
                     .onHover { isHovering in
                         vm.isHoveringCalendar = isHovering
                     }
                     .environmentObject(vm)
                     .transition(.opacity)
             }
-
-            if shouldShowCamera {
+            if showCam {
                 CameraPreviewView(webcamManager: webcamManager)
                     .scaledToFit()
                     .opacity(vm.notchState == .closed ? 0 : 1)
-                    .blur(radius: vm.notchState == .closed ? 20 : 0)
-                    .animation(.interactiveSpring(response: 0.32, dampingFraction: 0.76, blendDuration: 0), value: shouldShowCamera)
+                    .blur(radius: vm.notchState == .closed ? 10 : 0)
+                    .transition(.opacity)
             }
         }
-        .transition(.asymmetric(insertion: .opacity.combined(with: .move(edge: .top)), removal: .opacity))
-        .blur(radius: vm.notchState == .closed ? 30 : 0)
+        .frame(width: activeCount == 1 ? (showCal ? 215 : showCam ? 170 : nil) : nil)
     }
 }
 
