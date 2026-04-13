@@ -26,7 +26,9 @@ struct ContentView: View {
     @State private var hoverTask: Task<Void, Never>?
     @State private var isHovering: Bool = false
     @State private var anyDropDebounceTask: Task<Void, Never>?
+    
     @State private var hasTriggeredSwipe = false
+    @State private var lockedView: NotchViews? = nil
 
     @State private var gestureProgress: CGFloat = .zero
 
@@ -568,44 +570,42 @@ struct ContentView: View {
 
     private func handleDownGesture(translation: CGFloat, phase: NSEvent.Phase) {
 
-        // OPEN STATE → switch views
         if vm.notchState == .open {
 
             if phase == .began {
                 hasTriggeredSwipe = false
+                lockedView = nil
             }
 
-            // STOP updating after trigger (prevents stretch bug)
-            if !hasTriggeredSwipe {
-                withAnimation(animationSpring) {
-                    gestureProgress = min(translation / 40, 2)
+            // Once a view is committed, re-assert it on every subsequent
+            // event — including any duplicate .ended fired by PanGesture's
+            // timeout — so nothing can bounce us back to the previous view
+            if let target = lockedView {
+                coordinator.currentView = target
+                if phase == .ended {
+                    withAnimation(animationSpring) { gestureProgress = .zero }
                 }
+                return
             }
 
-            // trigger ONCE
-            if translation > Defaults[.gestureSensitivity] && !hasTriggeredSwipe {
-                hasTriggeredSwipe = true
-
-                if Defaults[.enableHaptics] {
-                    haptics.toggle()
-                }
-
-                // SWITCH IMMEDIATELY (no delay = no double fire)
-                withAnimation(animationSpring) {
-                    if coordinator.currentView == .home {
-                        coordinator.currentView = .shelf
-                    } else {
-                        coordinator.currentView = .home
-                    }
-                }
-            }
-
-            // FULL RESET when gesture ends
             if phase == .ended {
+                withAnimation(animationSpring) { gestureProgress = .zero }
+                return
+            }
+
+            withAnimation(animationSpring) {
+                gestureProgress = min(translation / 60, 1.2)
+            }
+
+            let openThreshold: CGFloat = min(Defaults[.gestureSensitivity] * 0.35, 70)
+            if translation > openThreshold {
+                let destination: NotchViews = coordinator.currentView == .home ? .shelf : .home
+                lockedView = destination
+                hasTriggeredSwipe = true
+                if Defaults[.enableHaptics] { haptics.toggle() }
                 withAnimation(animationSpring) {
-                    gestureProgress = .zero
+                    coordinator.currentView = destination
                 }
-                hasTriggeredSwipe = false
             }
 
             return
@@ -624,12 +624,8 @@ struct ContentView: View {
         }
 
         if translation > Defaults[.gestureSensitivity] {
-            if Defaults[.enableHaptics] {
-                haptics.toggle()
-            }
-            withAnimation(animationSpring) {
-                gestureProgress = .zero
-            }
+            if Defaults[.enableHaptics] { haptics.toggle() }
+            withAnimation(animationSpring) { gestureProgress = .zero }
             doOpen()
         }
     }

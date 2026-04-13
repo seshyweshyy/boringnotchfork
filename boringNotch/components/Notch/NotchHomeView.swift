@@ -450,6 +450,7 @@ struct NotchHomeView: View {
                 MusicPlayerView(albumArtNamespace: albumArtNamespace)
             }
             if showCal {
+                Divider()
                 CalendarView()
                     .frame(width: showCam ? 170 : 215)
                     .onHover { isHovering in
