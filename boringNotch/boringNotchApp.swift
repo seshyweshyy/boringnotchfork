@@ -91,6 +91,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @MainActor
     func onScreenLocked(_ notification: Notification) {
         isScreenLocked = true
+        broadcastLockState(true)
         if !Defaults[.showOnLockScreen] {
             cleanupWindows()
         } else {
@@ -101,10 +102,44 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @MainActor
     func onScreenUnlocked(_ notification: Notification) {
         isScreenLocked = false
+        broadcastLockState(false)
         if !Defaults[.showOnLockScreen] {
             adjustWindowPosition(changeAlpha: true)
         } else {
             disableSkyLightOnAllWindows()
+        }
+    }
+    
+    @MainActor
+    private func broadcastLockState(_ locked: Bool) {
+        if locked {
+            withAnimation(.spring(response: 0.38, dampingFraction: 0.72)) {
+                vm.isScreenLocked = true
+                vm.lockNotch()
+            }
+            for viewModel in viewModels.values {
+                withAnimation(.spring(response: 0.38, dampingFraction: 0.72)) {
+                    viewModel.isScreenLocked = true
+                    viewModel.lockNotch()
+                }
+            }
+        } else {
+            // Small delay so window is visible before we animate the unlock icon
+            Task {
+                try? await Task.sleep(for: .milliseconds(200))
+                await MainActor.run {
+                    withAnimation(.spring(response: 0.38, dampingFraction: 0.72)) {
+                        vm.isScreenLocked = false
+                        vm.unlockNotch()
+                    }
+                    for viewModel in viewModels.values {
+                        withAnimation(.spring(response: 0.38, dampingFraction: 0.72)) {
+                            viewModel.isScreenLocked = false
+                            viewModel.unlockNotch()
+                        }
+                    }
+                }
+            }
         }
     }
     

@@ -37,9 +37,22 @@ class BoringViewModel: NSObject, ObservableObject {
     @Published var notchSize: CGSize = getClosedNotchSize()
     @Published var closedNotchSize: CGSize = getClosedNotchSize()
     
+    
     let webcamManager = WebcamManager.shared
+    @Published var isScreenLocked: Bool = false
     @Published var isCameraExpanded: Bool = false
     @Published var isRequestingAuthorization: Bool = false
+    
+    func lockNotch() {
+        self.notchSize = CGSize(
+            width: closedNotchSize.width + (2 * max(0, effectiveClosedNotchHeight - 12) + 60),
+            height: closedNotchSize.height
+        )
+    }
+
+    func unlockNotch() {
+        self.notchSize = closedNotchSize
+    }
     
     deinit {
         destroy()
@@ -190,6 +203,7 @@ class BoringViewModel: NSObject, ObservableObject {
     }
 
     func open() {
+        guard !isScreenLocked else { return }
         self.notchSize = coordinator.currentView == .home ? openNotchHomeSize : openNotchSize
         self.notchState = .open
         MusicManager.shared.forceUpdate()
