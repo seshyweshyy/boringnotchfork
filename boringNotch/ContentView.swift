@@ -26,6 +26,7 @@ struct ContentView: View {
     @State private var hoverTask: Task<Void, Never>?
     @State private var isHovering: Bool = false
     @State private var anyDropDebounceTask: Task<Void, Never>?
+    @State private var hasTriggeredSwipe = false
 
     @State private var gestureProgress: CGFloat = .zero
 
@@ -566,6 +567,51 @@ struct ContentView: View {
     // MARK: - Gesture Handling
 
     private func handleDownGesture(translation: CGFloat, phase: NSEvent.Phase) {
+
+        // OPEN STATE → switch views
+        if vm.notchState == .open {
+
+            if phase == .began {
+                hasTriggeredSwipe = false
+            }
+
+            // STOP updating after trigger (prevents stretch bug)
+            if !hasTriggeredSwipe {
+                withAnimation(animationSpring) {
+                    gestureProgress = min(translation / 40, 2)
+                }
+            }
+
+            // trigger ONCE
+            if translation > Defaults[.gestureSensitivity] && !hasTriggeredSwipe {
+                hasTriggeredSwipe = true
+
+                if Defaults[.enableHaptics] {
+                    haptics.toggle()
+                }
+
+                // SWITCH IMMEDIATELY (no delay = no double fire)
+                withAnimation(animationSpring) {
+                    if coordinator.currentView == .home {
+                        coordinator.currentView = .shelf
+                    } else {
+                        coordinator.currentView = .home
+                    }
+                }
+            }
+
+            // FULL RESET when gesture ends
+            if phase == .ended {
+                withAnimation(animationSpring) {
+                    gestureProgress = .zero
+                }
+                hasTriggeredSwipe = false
+            }
+
+            return
+        }
+
+        // CLOSED → OPEN (unchanged)
         guard vm.notchState == .closed else { return }
 
         if phase == .ended {
