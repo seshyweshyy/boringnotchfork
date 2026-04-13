@@ -37,9 +37,14 @@ struct MusicLiveActivity: View {
                 )
                 .matchedGeometryEffect(id: "albumArt", in: albumArtNamespace)
                 .frame(
-                    width: max(0, vm.effectiveClosedNotchHeight - 12),
-                    height: max(0, vm.effectiveClosedNotchHeight - 12)
+                    width: max(0, (coordinator.sneakPeek.show && coordinator.sneakPeek.type == .music)
+                        ? vm.effectiveClosedNotchHeight - 4   // slightly bigger during sneak peek
+                        : vm.effectiveClosedNotchHeight - 12),
+                    height: max(0, (coordinator.sneakPeek.show && coordinator.sneakPeek.type == .music)
+                        ? vm.effectiveClosedNotchHeight - 4
+                        : vm.effectiveClosedNotchHeight - 12)
                 )
+                .animation(.spring(response: 0.35, dampingFraction: 0.75), value: coordinator.sneakPeek.show)
                 .rotation3DEffect(
                     .degrees(rotationDegrees),
                     axis: (x: 0, y: 1, z: 0),
@@ -132,9 +137,12 @@ struct MusicLiveActivity: View {
             )
         }
         .frame(
-            height: vm.effectiveClosedNotchHeight,
+            height: (coordinator.sneakPeek.show && coordinator.sneakPeek.type == .music)
+                ? vm.effectiveClosedNotchHeight + 8
+                : vm.effectiveClosedNotchHeight,
             alignment: .center
         )
+        .animation(.spring(response: 0.35, dampingFraction: 0.75), value: coordinator.sneakPeek.show)
     }
 }
 
