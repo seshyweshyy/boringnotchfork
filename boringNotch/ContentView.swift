@@ -205,7 +205,7 @@ struct ContentView: View {
             && vm.notchState == .closed && Defaults[.showPowerStatusNotifications]
         {
             chinWidth = 640
-        } else if vm.notchState == .closed && vm.isScreenLocked {
+        } else if vm.notchState == .closed && (vm.isScreenLocked || isUnlockAnimating) {
             chinWidth += 60
         } else if (!coordinator.expandingView.show || coordinator.expandingView.type == .music)
             && vm.notchState == .closed && (musicManager.isPlaying || !musicManager.isPlayerIdle)
@@ -322,6 +322,16 @@ struct ContentView: View {
                                     if !self.vm.isBatteryPopoverActive && !self.isHovering && self.vm.notchState == .open && !SharingStateManager.shared.preventNotchClose {
                                         self.vm.close()
                                     }
+                                }
+                            }
+                        }
+                    }
+                    .onChange(of: vm.isScreenLocked) { _, newLocked in
+                        if !newLocked {
+                            isUnlockAnimating = true
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.55) {
+                                withAnimation(.spring(response: 0.40, dampingFraction: 0.80)) {
+                                    isUnlockAnimating = false
                                 }
                             }
                         }

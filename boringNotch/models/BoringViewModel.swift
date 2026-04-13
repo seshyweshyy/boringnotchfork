@@ -49,10 +49,6 @@ class BoringViewModel: NSObject, ObservableObject {
             height: closedNotchSize.height
         )
     }
-
-    func unlockNotch() {
-        self.notchSize = closedNotchSize
-    }
     
     deinit {
         destroy()

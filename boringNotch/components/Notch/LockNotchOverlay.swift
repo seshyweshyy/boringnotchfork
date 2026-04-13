@@ -22,13 +22,13 @@ struct LockNotchOverlay: View {
         Group {
             if isLocked || isUnlockAnimating {
                 Image(systemName: isUnlockAnimating ? "lock.open.fill" : "lock.fill")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.system(size: isUnlockAnimating ? 14 : 13, weight: .semibold))
                     .foregroundStyle(
                         isUnlockAnimating
-                            ? Color.white.opacity(0.55)
+                            ? Color.white.opacity(0.85)
                             : Color.white.opacity(0.75)
                     )
-                    .scaleEffect(isUnlockAnimating ? 0.85 : 1.0)
+                    .scaleEffect(isUnlockAnimating ? 0.9 : 1.0)
                     .transition(
                         .asymmetric(
                             insertion: .scale(scale: 0.6).combined(with: .opacity),
@@ -39,16 +39,6 @@ struct LockNotchOverlay: View {
         }
         .animation(.spring(response: 0.38, dampingFraction: 0.72), value: isLocked)
         .animation(.spring(response: 0.30, dampingFraction: 0.65), value: isUnlockAnimating)
-        .onChange(of: isLocked) { _, newLocked in
-            if !newLocked {
-                isUnlockAnimating = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.55) {
-                    withAnimation(.spring(response: 0.40, dampingFraction: 0.80)) {
-                        isUnlockAnimating = false
-                    }
-                }
-            }
-        }
     }
 }
 

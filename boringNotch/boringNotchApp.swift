@@ -124,18 +124,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 }
             }
         } else {
-            // Small delay so window is visible before we animate the unlock icon
             Task {
                 try? await Task.sleep(for: .milliseconds(200))
                 await MainActor.run {
                     withAnimation(.spring(response: 0.38, dampingFraction: 0.72)) {
                         vm.isScreenLocked = false
-                        vm.unlockNotch()
                     }
                     for viewModel in viewModels.values {
                         withAnimation(.spring(response: 0.38, dampingFraction: 0.72)) {
                             viewModel.isScreenLocked = false
-                            viewModel.unlockNotch()
                         }
                     }
                 }
