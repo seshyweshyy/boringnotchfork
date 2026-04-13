@@ -166,6 +166,8 @@ struct ContentView: View {
     @State private var gestureProgress: CGFloat = .zero
 
     @State private var haptics: Bool = false
+    
+    @State private var isUnlockAnimating: Bool = false
 
     @Namespace var albumArtNamespace
 
@@ -405,17 +407,14 @@ struct ContentView: View {
                     Spacer()
                 } else {
                     // Locked state — show lock icon first, before any other content
-                    if vm.isScreenLocked {
+                    if vm.isScreenLocked || isUnlockAnimating {
                         HStack(spacing: 0) {
-                            LockNotchOverlay(isLocked: vm.isScreenLocked)
+                            LockNotchOverlay(isLocked: vm.isScreenLocked, isUnlockAnimating: $isUnlockAnimating)
                                 .allowsHitTesting(false)
-                                .padding(.leading, 10)
-                            Rectangle()
-                                .fill(.clear)
-                                .frame(width: vm.closedNotchSize.width - 20,
-                                       height: vm.effectiveClosedNotchHeight)
+                                .padding(.leading, cornerRadiusInsets.closed.bottom - 10)
+                            Spacer()
                         }
-                        .frame(height: vm.effectiveClosedNotchHeight)
+                        .frame(width: vm.closedNotchSize.width + 50, height: vm.effectiveClosedNotchHeight)
                     } else {
                         if coordinator.expandingView.type == .battery && coordinator.expandingView.show
                             && vm.notchState == .closed && Defaults[.showPowerStatusNotifications]
