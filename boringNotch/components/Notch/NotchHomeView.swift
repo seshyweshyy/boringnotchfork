@@ -29,6 +29,9 @@ struct AlbumArtView: View {
     @ObservedObject var vm: BoringViewModel
     let albumArtNamespace: Namespace.ID
 
+    @State private var displayedArt: NSImage = MusicManager.shared.albumArt
+    @State private var rotationDegrees: Double = 0
+
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             if Defaults[.lightingEffect] {
@@ -82,7 +85,7 @@ struct AlbumArtView: View {
                 
 
     private var albumArtImage: some View {
-        Image(nsImage: musicManager.albumArt)
+        Image(nsImage: displayedArt)
             .resizable()
             .aspectRatio(1, contentMode: .fit)
             .matchedGeometryEffect(id: "albumArt", in: albumArtNamespace)
@@ -93,11 +96,30 @@ struct AlbumArtView: View {
                         ? MusicPlayerImageSizes.cornerRadiusInset.opened
                         : MusicPlayerImageSizes.cornerRadiusInset.closed)
             )
-    }
+            .rotation3DEffect(
+                .degrees(rotationDegrees),
+                axis: (x: 0, y: 1, z: 0),
+                perspective: 0.4
+            )
+            .onChange(of: musicManager.albumArt) { _, newArt in
+                let dir: Double = musicManager.flipDirection == .forward ? -1 : 1
 
+                withAnimation(.easeIn(duration: 0.15)) {
+                    rotationDegrees = dir * 90
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                    displayedArt = newArt
+                    rotationDegrees = dir * -90
+                    withAnimation(.easeOut(duration: 0.15)) {
+                        rotationDegrees = 0
+                    }
+                }
+            }
+    }
+    
     @ViewBuilder
     private var appIconOverlay: some View {
-        if vm.notchState == .open && !musicManager.usingAppIconForArtwork {
+        if vm.notchState == .open && !musicManager.usingAppIconForArtwork && rotationDegrees == 0 {
             AppIcon(for: musicManager.bundleIdentifier ?? "com.apple.Music")
                 .resizable()
                 .aspectRatio(contentMode: .fill)

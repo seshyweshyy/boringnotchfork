@@ -14,6 +14,11 @@ let defaultImage: NSImage = .init(
     accessibilityDescription: "Album Art"
 )!
 
+enum FlipDirection {
+    case forward   // next track / auto-advance
+    case backward  // previous track
+}
+
 class MusicManager: ObservableObject {
     // MARK: - Properties
     static let shared = MusicManager()
@@ -27,6 +32,9 @@ class MusicManager: ObservableObject {
 
     // Active controller
     private var activeController: (any MediaControllerProtocol)?
+    
+    // Music art flip direction
+    private var directionIsLocked: Bool = false
 
     // Published properties for UI
     @Published var songTitle: String = "I'm Handsome"
@@ -63,6 +71,7 @@ class MusicManager: ObservableObject {
     private var lastArtworkBundleIdentifier: String? = nil
 
     @Published var isFlipping: Bool = false
+    @Published var flipDirection: FlipDirection = .forward
     private var flipWorkItem: DispatchWorkItem?
 
     @Published var isTransitioning: Bool = false
@@ -208,13 +217,16 @@ class MusicManager: ObservableObject {
         if hasContentChange {
             self.triggerFlipAnimation()
 
-            if artworkChanged, let artwork = state.artwork {
-                self.updateArtwork(artwork)
-            } else if state.artwork == nil {
-                // Try to use app icon if no artwork but track changed
-                if let appIconImage = AppIconAsNSImage(for: state.bundleIdentifier) {
-                    self.usingAppIconForArtwork = true
-                    self.updateAlbumArt(newAlbumArt: appIconImage)
+            // Delay artwork swap to sync with the flip midpoint (phase 1 duration = 0.15s)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { [weak self] in
+                guard let self = self else { return }
+                if artworkChanged, let artwork = state.artwork {
+                    self.updateArtwork(artwork)
+                } else if state.artwork == nil {
+                    if let appIconImage = AppIconAsNSImage(for: state.bundleIdentifier) {
+                        self.usingAppIconForArtwork = true
+                        self.updateAlbumArt(newAlbumArt: appIconImage)
+                    }
                 }
             }
             self.artworkData = state.artwork
@@ -506,18 +518,17 @@ class MusicManager: ObservableObject {
         return syncedLyrics[idx].text
     }
 
-    private func triggerFlipAnimation() {
-        // Cancel any existing animation
+    private func triggerFlipAnimation(direction: FlipDirection = .forward) {
         flipWorkItem?.cancel()
-
-        // Create a new animation
+        if !directionIsLocked {
+            flipDirection = direction
+        }
         let workItem = DispatchWorkItem { [weak self] in
             self?.isFlipping = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self?.isFlipping = false
             }
         }
-
         flipWorkItem = workItem
         DispatchQueue.main.async(execute: workItem)
     }
@@ -630,15 +641,21 @@ class MusicManager: ObservableObject {
     }
 
     func nextTrack() {
-        Task {
-            await activeController?.nextTrack()
+        flipDirection = .forward
+        directionIsLocked = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.directionIsLocked = false
         }
+        Task { await activeController?.nextTrack() }
     }
 
     func previousTrack() {
-        Task {
-            await activeController?.previousTrack()
+        flipDirection = .backward
+        directionIsLocked = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.directionIsLocked = false
         }
+        Task { await activeController?.previousTrack() }
     }
 
     func seek(to position: TimeInterval) {

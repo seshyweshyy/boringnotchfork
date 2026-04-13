@@ -13,6 +13,131 @@ import KeyboardShortcuts
 import SwiftUI
 import SwiftUIIntrospect
 
+struct MusicLiveActivity: View {
+    @ObservedObject var musicManager = MusicManager.shared
+    @EnvironmentObject var vm: BoringViewModel
+    @ObservedObject var coordinator = BoringViewCoordinator.shared
+    @Default(.coloredSpectrogram) var coloredSpectrogram
+    @Default(.sneakPeekStyles) var sneakPeekStyles
+    @Default(.useMusicVisualizer) var useMusicVisualizer
+
+    let albumArtNamespace: Namespace.ID
+
+    @State private var displayedArt: NSImage = MusicManager.shared.albumArt
+    @State private var rotationDegrees: Double = 0
+
+    var body: some View {
+        HStack {
+            Image(nsImage: displayedArt)
+                .resizable()
+                .clipped()
+                .clipShape(
+                    RoundedRectangle(
+                        cornerRadius: MusicPlayerImageSizes.cornerRadiusInset.closed)
+                )
+                .matchedGeometryEffect(id: "albumArt", in: albumArtNamespace)
+                .frame(
+                    width: max(0, vm.effectiveClosedNotchHeight - 12),
+                    height: max(0, vm.effectiveClosedNotchHeight - 12)
+                )
+                .rotation3DEffect(
+                    .degrees(rotationDegrees),
+                    axis: (x: 0, y: 1, z: 0),
+                    perspective: 0.4
+                )
+                .onChange(of: musicManager.albumArt) { _, newArt in
+                    let dir: Double = musicManager.flipDirection == .forward ? -1 : 1
+
+                    withAnimation(.easeIn(duration: 0.15)) {
+                        rotationDegrees = dir * 90
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                        displayedArt = newArt
+                        rotationDegrees = dir * -90
+                        withAnimation(.easeOut(duration: 0.15)) {
+                            rotationDegrees = 0
+                        }
+                    }
+                }
+
+            Rectangle()
+                .fill(.black)
+                .overlay(
+                    HStack(alignment: .top) {
+                        if coordinator.expandingView.show
+                            && coordinator.expandingView.type == .music
+                        {
+                            MarqueeText(
+                                .constant(musicManager.songTitle),
+                                textColor: coloredSpectrogram
+                                    ? Color(nsColor: musicManager.avgColor) : Color.gray,
+                                minDuration: 0.4,
+                                frameWidth: 100
+                            )
+                            .opacity(
+                                (coordinator.expandingView.show
+                                    && sneakPeekStyles == .inline)
+                                    ? 1 : 0
+                            )
+                            Spacer(minLength: vm.closedNotchSize.width)
+                            Text(musicManager.artistName)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                                .foregroundStyle(
+                                    coloredSpectrogram
+                                        ? Color(nsColor: musicManager.avgColor)
+                                        : Color.gray
+                                )
+                                .opacity(
+                                    (coordinator.expandingView.show
+                                        && coordinator.expandingView.type == .music
+                                        && sneakPeekStyles == .inline)
+                                        ? 1 : 0
+                                )
+                        }
+                    }
+                )
+                .frame(
+                    width: (coordinator.expandingView.show
+                        && coordinator.expandingView.type == .music
+                        && sneakPeekStyles == .inline)
+                        ? 380
+                        : vm.closedNotchSize.width
+                            + -cornerRadiusInsets.closed.top
+                )
+
+            HStack {
+                if useMusicVisualizer {
+                    Rectangle()
+                        .fill(
+                            coloredSpectrogram
+                                ? Color(nsColor: musicManager.avgColor).gradient
+                                : Color.gray.gradient
+                        )
+                        .frame(width: 50, alignment: .center)
+                        .matchedGeometryEffect(id: "spectrum", in: albumArtNamespace)
+                        .mask {
+                            AudioSpectrumView(isPlaying: $musicManager.isPlaying)
+                                .frame(width: 16, height: 12)
+                        }
+                } else {
+                    LottieAnimationContainer()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            }
+            .frame(
+                width: max(0, vm.effectiveClosedNotchHeight - 12),
+                height: max(0, vm.effectiveClosedNotchHeight - 12),
+                alignment: .center
+            )
+        }
+        .frame(
+            height: vm.effectiveClosedNotchHeight,
+            alignment: .center
+        )
+    }
+}
+
 @MainActor
 struct ContentView: View {
     @EnvironmentObject var vm: BoringViewModel
@@ -300,7 +425,7 @@ struct ContentView: View {
                           InlineHUD(type: $coordinator.sneakPeek.type, value: $coordinator.sneakPeek.value, icon: $coordinator.sneakPeek.icon, hoverAnimation: $isHovering, gestureProgress: $gestureProgress)
                               .transition(.opacity)
                       } else if (!coordinator.expandingView.show || coordinator.expandingView.type == .music) && vm.notchState == .closed && (musicManager.isPlaying || !musicManager.isPlayerIdle) && coordinator.musicLiveActivityEnabled && !vm.hideOnClosed {
-                          MusicLiveActivity()
+                          MusicLiveActivity(albumArtNamespace: albumArtNamespace)
                               .frame(alignment: .center)
                       } else if !coordinator.expandingView.show && vm.notchState == .closed && (!musicManager.isPlaying && musicManager.isPlayerIdle) && Defaults[.showNotHumanFace] && !vm.hideOnClosed  {
                           BoringFaceAnimation()
@@ -399,107 +524,6 @@ struct ContentView: View {
                 MinimalFaceFeatures()
             }
         }.frame(
-            height: vm.effectiveClosedNotchHeight,
-            alignment: .center
-        )
-    }
-
-    @ViewBuilder
-    func MusicLiveActivity() -> some View {
-        HStack {
-            Image(nsImage: musicManager.albumArt)
-                .resizable()
-                .clipped()
-                .clipShape(
-                    RoundedRectangle(
-                        cornerRadius: MusicPlayerImageSizes.cornerRadiusInset.closed)
-                )
-                .matchedGeometryEffect(id: "albumArt", in: albumArtNamespace)
-                .frame(
-                    width: max(0, vm.effectiveClosedNotchHeight - 12),
-                    height: max(0, vm.effectiveClosedNotchHeight - 12)
-                )
-
-            Rectangle()
-                .fill(.black)
-                .overlay(
-                    HStack(alignment: .top) {
-                        if coordinator.expandingView.show
-                            && coordinator.expandingView.type == .music
-                        {
-                            MarqueeText(
-                                .constant(musicManager.songTitle),
-                                textColor: Defaults[.coloredSpectrogram]
-                                    ? Color(nsColor: musicManager.avgColor) : Color.gray,
-                                minDuration: 0.4,
-                                frameWidth: 100
-                            )
-                            .opacity(
-                                (coordinator.expandingView.show
-                                    && Defaults[.sneakPeekStyles] == .inline)
-                                    ? 1 : 0
-                            )
-                            Spacer(minLength: vm.closedNotchSize.width)
-                            // Song Artist
-                            Text(musicManager.artistName)
-                                .lineLimit(1)
-                                .truncationMode(.tail)
-                                .foregroundStyle(
-                                    Defaults[.coloredSpectrogram]
-                                        ? Color(nsColor: musicManager.avgColor)
-                                        : Color.gray
-                                )
-                                .opacity(
-                                    (coordinator.expandingView.show
-                                        && coordinator.expandingView.type == .music
-                                        && Defaults[.sneakPeekStyles] == .inline)
-                                        ? 1 : 0
-                                )
-                        }
-                    }
-                )
-                .frame(
-                    width: (coordinator.expandingView.show
-                        && coordinator.expandingView.type == .music
-                        && Defaults[.sneakPeekStyles] == .inline)
-                        ? 380
-                        : vm.closedNotchSize.width
-                            + -cornerRadiusInsets.closed.top
-                )
-
-            HStack {
-                if useMusicVisualizer {
-                    Rectangle()
-                        .fill(
-                            Defaults[.coloredSpectrogram]
-                                ? Color(nsColor: musicManager.avgColor).gradient
-                                : Color.gray.gradient
-                        )
-                        .frame(width: 50, alignment: .center)
-                        .matchedGeometryEffect(id: "spectrum", in: albumArtNamespace)
-                        .mask {
-                            AudioSpectrumView(isPlaying: $musicManager.isPlaying)
-                                .frame(width: 16, height: 12)
-                        }
-                } else {
-                    LottieAnimationContainer()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                }
-            }
-            .frame(
-                width: max(
-                    0,
-                    vm.effectiveClosedNotchHeight - 12
-                        + gestureProgress / 2
-                ),
-                height: max(
-                    0,
-                    vm.effectiveClosedNotchHeight - 12
-                ),
-                alignment: .center
-            )
-        }
-        .frame(
             height: vm.effectiveClosedNotchHeight,
             alignment: .center
         )
