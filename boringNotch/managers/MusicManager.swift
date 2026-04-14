@@ -608,6 +608,8 @@ class MusicManager: ObservableObject {
         if isPlaying && Defaults[.enableSneakPeek] {
             if Defaults[.sneakPeekStyles] == .standard {
                 coordinator.toggleSneakPeek(status: true, type: .music)
+            } else if Defaults[.sneakPeekStyles] == .liquidGlass {
+                // lock screen only — no sneak peek needed
             } else {
                 coordinator.toggleExpandingView(status: true, type: .music)
             }

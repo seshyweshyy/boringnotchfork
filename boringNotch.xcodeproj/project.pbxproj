@@ -107,6 +107,7 @@
 		14E9FEAE2C7325770062E83F /* Button+Bouncing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14E9FEAD2C7325770062E83F /* Button+Bouncing.swift */; };
 		14FC6E502C7DED5600C7BEA5 /* DataTypes+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14FC6E4F2C7DED5600C7BEA5 /* DataTypes+Extensions.swift */; };
 		432A89E02F8A7C7500237ABF /* BottomRoundedRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432A89DF2F8A7C7500237ABF /* BottomRoundedRectangle.swift */; };
+		432CB8EF2F8DC2FD00D5FE00 /* LiquidGlassMusicWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432CB8EE2F8DC2FB00D5FE00 /* LiquidGlassMusicWidget.swift */; };
 		43D122D92F8D0FCE00A145E3 /* LockNotchOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D122D82F8D0FC600A145E3 /* LockNotchOverlay.swift */; };
 		507266DB2C908E2E00A2D00D /* HoverButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507266DA2C908E2E00A2D00D /* HoverButton.swift */; };
 		5917FD112E57891600E87F1C /* MediaKeyInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5917FD102E57891600E87F1C /* MediaKeyInterceptor.swift */; };
@@ -279,6 +280,7 @@
 		14E9FEAD2C7325770062E83F /* Button+Bouncing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Button+Bouncing.swift"; sourceTree = "<group>"; };
 		14FC6E4F2C7DED5600C7BEA5 /* DataTypes+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataTypes+Extensions.swift"; sourceTree = "<group>"; };
 		432A89DF2F8A7C7500237ABF /* BottomRoundedRectangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomRoundedRectangle.swift; sourceTree = "<group>"; };
+		432CB8EE2F8DC2FB00D5FE00 /* LiquidGlassMusicWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassMusicWidget.swift; sourceTree = "<group>"; };
 		43D122D82F8D0FC600A145E3 /* LockNotchOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockNotchOverlay.swift; sourceTree = "<group>"; };
 		507266DA2C908E2E00A2D00D /* HoverButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoverButton.swift; sourceTree = "<group>"; };
 		5917FD102E57891600E87F1C /* MediaKeyInterceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaKeyInterceptor.swift; sourceTree = "<group>"; };
@@ -700,6 +702,7 @@
 		B186542E2C6F453B000B926A /* Music */ = {
 			isa = PBXGroup;
 			children = (
+				432CB8EE2F8DC2FB00D5FE00 /* LiquidGlassMusicWidget.swift */,
 				B19424082CD0FEFE003E5DC2 /* LottieAnimationView.swift */,
 				147163972C5D35B70068B555 /* MusicVisualizer.swift */,
 			);
@@ -1015,6 +1018,7 @@
 				112FB7352CCF16F70015238C /* NotchSpaceManager.swift in Sources */,
 				14FC6E502C7DED5600C7BEA5 /* DataTypes+Extensions.swift in Sources */,
 				1153BD982D9881F900979FB0 /* AppleScriptHelper.swift in Sources */,
+				432CB8EF2F8DC2FD00D5FE00 /* LiquidGlassMusicWidget.swift in Sources */,
 				11CFC6612E097F6800748C80 /* PermissionsRequestView.swift in Sources */,
 				14D570D22C5F6C6A0011E668 /* BoringExtrasMenu.swift in Sources */,
 				11D58EA22E760AE100FA8377 /* ImageService.swift in Sources */,

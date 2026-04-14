@@ -680,6 +680,12 @@ struct Media: View {
                 }
             } header: {
                 Text("Media playback live activity")
+            } footer: {
+                if sneakPeekStyles == .liquidGlass {
+                    Text("Liquid Glass shows a frosted music card below the notch on track changes and on the lock screen.")
+                        .foregroundStyle(.secondary)
+                        .font(.caption)
+                }
             }
             
             Section {

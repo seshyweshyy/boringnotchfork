@@ -55,6 +55,7 @@ enum MediaControllerType: String, CaseIterable, Identifiable, Defaults.Serializa
 enum SneakPeekStyle: String, CaseIterable, Identifiable, Defaults.Serializable {
     case standard = "Default"
     case inline = "Inline"
+    case liquidGlass = "Liquid Glass"
     
     var id: String { self.rawValue }
 }
