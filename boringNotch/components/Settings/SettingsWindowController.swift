@@ -33,8 +33,7 @@ class SettingsWindowController: NSWindowController {
     
     func setUpdaterController(_ controller: SPUStandardUpdaterController) {
         self.updaterController = controller
-        // Recreate the content view with the proper updater controller
-        setupWindow()
+        // Don't rebuild the window — content is loaded lazily on first showWindow()
     }
     
     private func setupWindow() {
@@ -46,49 +45,44 @@ class SettingsWindowController: NSWindowController {
         window.toolbarStyle = .unified
         window.isMovableByWindowBackground = true
         
-        // Make it behave like a regular app window with proper Spaces support
         window.collectionBehavior = [.managed, .participatesInCycle, .fullScreenAuxiliary]
         
-        // Ensure proper window behavior
         window.hidesOnDeactivate = false
         window.isExcludedFromWindowsMenu = false
         
-        // Configure window to be a standard document-style window
         window.isRestorable = true
         window.identifier = NSUserInterfaceItemIdentifier("BoringNotchSettingsWindow")
         
-        // Create the SwiftUI content
-        let settingsView = SettingsView(updaterController: updaterController)
-        let hostingView = NSHostingView(rootView: settingsView)
-        window.contentView = hostingView
+        // Start with an empty view — content is loaded lazily on first show
+        window.contentView = NSView()
         
-        // Handle window closing
         window.delegate = self
     }
     
+    private func loadContentIfNeeded() {
+        guard let window = window,
+              !(window.contentView is NSHostingView<SettingsView>) else { return }
+        let settingsView = SettingsView(updaterController: updaterController)
+        window.contentView = NSHostingView(rootView: settingsView)
+    }
+    
     func showWindow() {
-        // Set app to regular mode first
-        NSApp.setActivationPolicy(.regular)
+        loadContentIfNeeded()
         
-        // If window is already visible, bring it to front properly
+        // If window is already visible, bring it to front
         if window?.isVisible == true {
-            NSApp.activate(ignoringOtherApps: true)
-            window?.orderFrontRegardless()
             window?.makeKeyAndOrderFront(nil)
             return
         }
         
-        // Show the window with proper ordering
-        window?.orderFrontRegardless()
-        window?.makeKeyAndOrderFront(nil)
         window?.center()
+        window?.makeKeyAndOrderFront(nil)
         
-        // Activate the app and ensure window gets focus
-        NSApp.activate(ignoringOtherApps: true)
-        
-        // Force window to front after activation
-        DispatchQueue.main.async { [weak self] in
-            self?.window?.makeKeyAndOrderFront(nil)
+        // Defer activation policy change to avoid a CPU spike on open
+        DispatchQueue.main.async {
+            NSApp.setActivationPolicy(.regular)
+            NSApp.activate(ignoringOtherApps: true)
+            self.window?.makeKeyAndOrderFront(nil)
         }
     }
     
@@ -99,9 +93,10 @@ class SettingsWindowController: NSWindowController {
     
     private func relinquishFocus() {
         window?.orderOut(nil)
-        
-        // Set app back to accessory mode immediately
         NSApp.setActivationPolicy(.accessory)
+        
+        // Tear down the content view so @Default subscriptions and timers don't run in the background
+        window?.contentView = NSView()
     }
 }
 
@@ -115,11 +110,9 @@ extension SettingsWindowController: NSWindowDelegate {
     }
     
     func windowDidBecomeKey(_ notification: Notification) {
-        // Ensure app is in regular mode when window becomes key
         NSApp.setActivationPolicy(.regular)
     }
     
     func windowDidResignKey(_ notification: Notification) {
     }
-    
 }
