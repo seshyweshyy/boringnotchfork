@@ -112,56 +112,53 @@ struct MusicSlotConfigurationView: View {
                     .foregroundStyle(.secondary)
             }
             previewSection
-
+            
             Divider()
-
+            
             VStack(alignment: .leading, spacing: 6) {
                 Text("Drag a control onto a slot")
                     .font(.caption)
                     .foregroundStyle(.secondary)
-
-                ScrollView(.horizontal) {
-                    HStack(spacing: 12) {
-                        ForEach(MusicControlButton.pickerOptions, id: \.self) { control in
-                            VStack(spacing: 6) {
-                                ZStack {
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .fill(Color(NSColor.controlBackgroundColor))
-                                        .frame(width: 44, height: 44)
-
-                                    if control != .none {
-                                        Image(systemName: control.iconName)
-                                            .font(.system(size: control.prefersLargeScale ? 18 : 15, weight: .medium))
-                                            .foregroundStyle(control == .none ? Color.secondary : Color.primary)
-                                            .frame(width: 28, height: 28)
-                                    }
+                
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 56), spacing: 12)], spacing: 12) {
+                    ForEach(MusicControlButton.pickerOptions, id: \.self) { control in
+                        VStack(spacing: 6) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(Color(NSColor.controlBackgroundColor))
+                                    .frame(width: 44, height: 44)
+                                
+                                if control != .none {
+                                    Image(systemName: control.iconName)
+                                        .font(.system(size: control.prefersLargeScale ? 18 : 15, weight: .medium))
+                                        .foregroundStyle(control == .none ? Color.secondary : Color.primary)
+                                        .frame(width: 28, height: 28)
                                 }
-                                .cornerRadius(8)
-                                .contentShape(RoundedRectangle(cornerRadius: 8))
-                                .onDrag {
-                                    return NSItemProvider(object: NSString(string: "control:\(control.rawValue)"))
-                                }
-                                .onTapGesture {
-                                    if let idx = musicControlSlots.firstIndex(of: .none) {
-                                        updateSlot(control, at: idx)
-                                    } else {
-                                        withAnimation { updateSlot(control, at: 0) }
-                                    }
-                                }
-
-                                Text(control.label)
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
-                                    .frame(width: 60)
-                                    .multilineTextAlignment(.center)
-                                    .lineLimit(2)
                             }
+                            .cornerRadius(8)
+                            .contentShape(RoundedRectangle(cornerRadius: 8))
+                            .onDrag {
+                                return NSItemProvider(object: NSString(string: "control:\(control.rawValue)"))
+                            }
+                            .onTapGesture {
+                                if let idx = musicControlSlots.firstIndex(of: .none) {
+                                    updateSlot(control, at: idx)
+                                } else {
+                                    withAnimation { updateSlot(control, at: 0) }
+                                }
+                            }
+                            
+                            Text(control.label)
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                                .frame(width: 60)
+                                .multilineTextAlignment(.center)
                         }
                     }
-                    .padding(.vertical, 4)
                 }
-                .scrollIndicators(.visible)
+                .padding(.vertical, 4)
             }
+            .scrollIndicators(.visible)
         }
     }
 

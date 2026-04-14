@@ -9,6 +9,7 @@
 import Combine
 import Defaults
 import SwiftUI
+import CoreAudio
 
 // MARK: - Music Player Components
 
@@ -233,81 +234,8 @@ struct MusicControlsView: View {
     }
 
     private var slotToolbar: some View {
-        let slots = activeSlots
-        return HStack(spacing: 6) {
-            ForEach(Array(slots.enumerated()), id: \.offset) { index, slot in
-                slotView(for: slot)
-                    .frame(alignment: .center)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .center)
-    }
-
-    private var activeSlots: [MusicControlButton] {
-        let sanitizedLimit = min(
-            max(slotLimit, MusicControlButton.minSlotCount),
-            MusicControlButton.maxSlotCount
-        )
-        let padded = slotConfig.padded(to: sanitizedLimit, filler: .none)
-        let result = Array(padded.prefix(sanitizedLimit))
-        // If calendar and camera are both visible alongside music, hide the edge slots
-        let shouldHideEdges = Defaults[.showCalendar] && Defaults[.showMirror] && webcamManager.cameraAvailable && vm.isCameraExpanded
-        if shouldHideEdges && result.count >= 5 {
-            return Array(result.dropFirst().dropLast())
-        }
-
-        return result
-    }
-
-    @ViewBuilder
-    private func slotView(for slot: MusicControlButton) -> some View {
-        switch slot {
-        case .shuffle:
-            HoverButton(icon: "shuffle", iconColor: musicManager.isShuffled ? .effectiveAccent : .primary, scale: .medium) {
-                MusicManager.shared.toggleShuffle()
-            }
-        case .previous:
-            HoverButton(icon: "backward.fill", scale: .medium) {
-                MusicManager.shared.previousTrack()
-            }
-        case .playPause:
-            HoverButton(icon: musicManager.isPlaying ? "pause.fill" : "play.fill", scale: .large) {
-                MusicManager.shared.togglePlay()
-            }
-        case .next:
-            HoverButton(icon: "forward.fill", scale: .medium) {
-                MusicManager.shared.nextTrack()
-            }
-        case .repeatMode:
-            HoverButton(icon: repeatIcon, iconColor: repeatIconColor, scale: .medium) {
-                MusicManager.shared.toggleRepeat()
-            }
-        case .volume:
-            VolumeControlView()
-        case .favorite:
-            FavoriteControlButton()
-        case .goBackward:
-            HoverButton(icon: "gobackward.15", scale: .medium) {
-                MusicManager.shared.skip(seconds: -15)
-            }
-        case .goForward:
-            HoverButton(icon: "goforward.15", scale: .medium) {
-                MusicManager.shared.skip(seconds: 15)
-            }
-        case .none:
-            Color.clear.frame(height: 1)
-        }
-    }
-
-    private var repeatIcon: String {
-        switch musicManager.repeatMode {
-        case .off:
-            return "repeat"
-        case .all:
-            return "repeat"
-        case .one:
-            return "repeat.1"
-        }
+        MusicSlotToolbar()
+            .frame(maxWidth: .infinity, alignment: .center)
     }
 
     private var repeatIconColor: Color {
@@ -438,6 +366,111 @@ struct VolumeControlView: View {
     }
 }
 
+// MARK: - Audio Output Button
+
+struct AudioOutputButton: View {
+    @State private var icon: String = audioOutputIcon()
+    
+    var body: some View {
+        HoverButton(icon: icon, scale: .medium) {
+            if let url = URL(string: "x-apple.systempreferences:com.apple.Sound-Settings.extension") {
+                NSWorkspace.shared.open(url)
+            }
+        }
+        .onAppear {
+            icon = audioOutputIcon()
+            startObservingOutputDevice()
+        }
+    }
+    
+    private func startObservingOutputDevice() {
+        var propAddr = AudioObjectPropertyAddress(
+            mSelector: kAudioHardwarePropertyDefaultOutputDevice,
+            mScope: kAudioObjectPropertyScopeGlobal,
+            mElement: kAudioObjectPropertyElementMain
+        )
+        AudioObjectAddPropertyListenerBlock(
+            AudioObjectID(kAudioObjectSystemObject),
+            &propAddr,
+            DispatchQueue.main
+        ) { _, _ in
+            icon = audioOutputIcon()
+        }
+    }
+}
+
+struct MusicSlotToolbar: View {
+    @ObservedObject private var musicManager = MusicManager.shared
+    @Default(.musicControlSlots) private var slotConfig
+
+    var body: some View {
+        HStack(spacing: 4) {
+            Spacer()
+            ForEach(Array(activeSlots.enumerated()), id: \.offset) { _, slot in
+                slotView(for: slot)
+            }
+            Spacer()
+        }
+    }
+
+    private var activeSlots: [MusicControlButton] {
+        let limit = min(max(MusicControlButton.minSlotCount, slotConfig.count), MusicControlButton.maxSlotCount)
+        return Array(slotConfig.padded(to: limit, filler: .none).prefix(limit))
+    }
+
+    @ViewBuilder
+    private func slotView(for slot: MusicControlButton) -> some View {
+        switch slot {
+        case .shuffle:
+            HoverButton(icon: "shuffle", iconColor: musicManager.isShuffled ? .effectiveAccent : .primary, scale: .medium) {
+                MusicManager.shared.toggleShuffle()
+            }
+        case .previous:
+            HoverButton(icon: "backward.fill", scale: .medium) {
+                MusicManager.shared.previousTrack()
+            }
+        case .playPause:
+            HoverButton(icon: musicManager.isPlaying ? "pause.fill" : "play.fill", scale: .large) {
+                MusicManager.shared.togglePlay()
+            }
+        case .next:
+            HoverButton(icon: "forward.fill", scale: .medium) {
+                MusicManager.shared.nextTrack()
+            }
+        case .repeatMode:
+            HoverButton(icon: repeatIcon, iconColor: repeatIconColor, scale: .medium) {
+                MusicManager.shared.toggleRepeat()
+            }
+        case .volume:
+            VolumeControlView()
+        case .favorite:
+            FavoriteControlButton()
+        case .goBackward:
+            HoverButton(icon: "gobackward.15", scale: .medium) {
+                MusicManager.shared.skip(seconds: -15)
+            }
+        case .goForward:
+            HoverButton(icon: "goforward.15", scale: .medium) {
+                MusicManager.shared.skip(seconds: 15)
+            }
+        case .audioOutput:
+            AudioOutputButton()
+        case .none:
+            Color.clear.frame(width: 40, height: 1)
+        }
+    }
+
+    private var repeatIcon: String {
+        switch musicManager.repeatMode {
+        case .off, .all: return "repeat"
+        case .one: return "repeat.1"
+        }
+    }
+
+    private var repeatIconColor: Color {
+        musicManager.repeatMode == .off ? .primary : .effectiveAccent
+    }
+}
 // MARK: - Main View
 
 struct NotchHomeView: View {
@@ -493,6 +526,57 @@ struct NotchHomeView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .center)
+    }
+}
+
+private func audioOutputIcon() -> String {
+    var deviceID = AudioObjectID(kAudioObjectUnknown)
+    var propAddr = AudioObjectPropertyAddress(
+        mSelector: kAudioHardwarePropertyDefaultOutputDevice,
+        mScope: kAudioObjectPropertyScopeGlobal,
+        mElement: kAudioObjectPropertyElementMain
+    )
+    var size = UInt32(MemoryLayout<AudioObjectID>.size)
+    AudioObjectGetPropertyData(AudioObjectID(kAudioObjectSystemObject), &propAddr, 0, nil, &size, &deviceID)
+    guard deviceID != kAudioObjectUnknown else { return "hifispeaker.fill" }
+
+    var transportType: UInt32 = 0
+    var transportAddr = AudioObjectPropertyAddress(
+        mSelector: kAudioDevicePropertyTransportType,
+        mScope: kAudioObjectPropertyScopeGlobal,
+        mElement: kAudioObjectPropertyElementMain
+    )
+    var transportSize = UInt32(MemoryLayout<UInt32>.size)
+    AudioObjectGetPropertyData(deviceID, &transportAddr, 0, nil, &transportSize, &transportType)
+
+    switch transportType {
+    case kAudioDeviceTransportTypeBluetooth, kAudioDeviceTransportTypeBluetoothLE:
+        var nameAddr = AudioObjectPropertyAddress(
+            mSelector: kAudioObjectPropertyName,
+            mScope: kAudioObjectPropertyScopeGlobal,
+            mElement: kAudioObjectPropertyElementMain
+        )
+        var nameRef: Unmanaged<CFString>? = nil
+        var nameSize = UInt32(MemoryLayout<Unmanaged<CFString>>.size)
+        AudioObjectGetPropertyData(deviceID, &nameAddr, 0, nil, &nameSize, &nameRef)
+        let name = nameRef?.takeRetainedValue() as String? ?? ""
+        if name.localizedCaseInsensitiveContains("AirPods Max") {
+            return "airpodsmax"
+        } else if name.localizedCaseInsensitiveContains("AirPods Pro") {
+            return "airpodspro"
+        } else if name.localizedCaseInsensitiveContains("AirPods") {
+            return "airpods"
+        } else {
+            return "headphones"
+        }
+    case kAudioDeviceTransportTypeUSB:
+        return "speaker.fill"
+    case kAudioDeviceTransportTypeHDMI, kAudioDeviceTransportTypeDisplayPort:
+        return "tv.fill"
+    case kAudioDeviceTransportTypeBuiltIn:
+        return "laptopcomputer"
+    default:
+        return "hifispeaker.fill"
     }
 }
 

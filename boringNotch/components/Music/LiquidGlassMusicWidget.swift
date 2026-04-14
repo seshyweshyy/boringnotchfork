@@ -92,23 +92,8 @@ struct LiquidGlassMusicWidget: View {
                 .padding(.top, 4)
                 
                 // ── Transport controls ────────────────────────────────────────
-                HStack(spacing: 0) {
-                    Spacer()
-                    HoverButton(icon: "backward.fill", scale: .medium) {
-                        MusicManager.shared.previousTrack()
-                    }
-                    HoverButton(
-                        icon: musicManager.isPlaying ? "pause.fill" : "play.fill",
-                        scale: .large
-                    ) {
-                        MusicManager.shared.togglePlay()
-                    }
-                    HoverButton(icon: "forward.fill", scale: .medium) {
-                        MusicManager.shared.nextTrack()
-                    }
-                    Spacer()
-                }
-                .padding(.bottom, 8)
+                MusicSlotToolbar()
+                    .padding(.bottom, 8)
             }
             .frame(width: 320)
             .glassEffect(widgetStyle == .tinted ? .regular : .clear, in: .rect(cornerRadius: 22))
