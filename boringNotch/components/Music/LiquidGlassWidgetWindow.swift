@@ -57,7 +57,7 @@ private struct LiquidGlassWidgetRoot: View {
                     )
                     // allowsHitTesting true so controls are tappable
                     .allowsHitTesting(true)
-                Spacer().frame(height: 200)
+                Spacer().frame(height: 210)
             }
             .frame(width: geo.size.width)
         }
