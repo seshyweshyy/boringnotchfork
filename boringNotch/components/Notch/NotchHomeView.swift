@@ -465,16 +465,16 @@ struct NotchHomeView: View {
         let showMusic = coordinator.musicLiveActivityEnabled
         let showCal = Defaults[.showCalendar]
         let showCam = shouldShowCamera
-        let activeCount = (showMusic ? 1 : 0) + (showCal ? 1 : 0) + (showCam ? 1 : 0)
 
-        return HStack(alignment: .top, spacing: (showCam && showCal) ? 10 : 15) {
+        return HStack(alignment: .top, spacing: WidgetWidth.spacing) {
             if showMusic {
                 MusicPlayerView(albumArtNamespace: albumArtNamespace)
+                    .frame(width: WidgetWidth.music)
             }
             if showCal {
                 Divider()
                 CalendarView()
-                    .frame(width: showCam ? 170 : 215)
+                    .frame(width: showCam ? WidgetWidth.calendarWithCam : WidgetWidth.calendar)
                     .onHover { isHovering in
                         vm.isHoveringCalendar = isHovering
                     }
@@ -483,13 +483,12 @@ struct NotchHomeView: View {
             }
             if showCam {
                 CameraPreviewView(webcamManager: webcamManager)
+                    .frame(width: WidgetWidth.camera)
                     .scaledToFit()
                     .opacity(vm.notchState == .closed ? 0 : 1)
-                    .blur(radius: vm.notchState == .closed ? 10 : 0)
                     .transition(.opacity)
             }
         }
-        .frame(width: activeCount == 1 ? (showCal ? 215 : showCam ? 170 : nil) : nil)
     }
 }
 

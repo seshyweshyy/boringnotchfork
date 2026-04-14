@@ -18,7 +18,12 @@ let openNotchSize: CGSize = .init(width: 640, height: 190)
 // Add a wider size specifically for the home view
 let openNotchHomeSize: CGSize = .init(width: 680, height: 190)
 
-let windowSize: CGSize = .init(width: openNotchHomeSize.width, height: openNotchHomeSize.height + shadowPadding)
+// windowSize must be wide enough for the widest possible home layout
+let windowSize: CGSize = .init(
+    width: WidgetWidth.music + WidgetWidth.calendar + WidgetWidth.camera
+           + WidgetWidth.spacing * 2 + WidgetWidth.dividerWidth + WidgetWidth.horizontalPad + 40,
+    height: openNotchHomeSize.height + shadowPadding
+)
 let cornerRadiusInsets: (opened: (top: CGFloat, bottom: CGFloat), closed: (top: CGFloat, bottom: CGFloat)) = (opened: (top: 19, bottom: 39), closed: (top: 6, bottom: 14))
 
 enum MusicPlayerImageSizes {
@@ -82,6 +87,16 @@ enum MusicPlayerImageSizes {
 }
 
 /// Computes the open notch width for the home view based on which widgets are active.
+enum WidgetWidth {
+    static let music: CGFloat    = 320
+    static let calendar: CGFloat = 220
+    static let camera: CGFloat   = 100
+    static let calendarWithCam: CGFloat = 180
+    static let spacing: CGFloat  = 12
+    static let dividerWidth: CGFloat = 1
+    static let horizontalPad: CGFloat = 60  // ContentView's horizontal padding * 2
+}
+
 func computedOpenNotchHomeWidth(
     showMusic: Bool,
     showCalendar: Bool,
@@ -92,22 +107,16 @@ func computedOpenNotchHomeWidth(
     let showCam = showMirror && cameraAvailable && cameraExpanded
     let showCal = showCalendar
 
-    // Widget widths (approximate, matching NotchHomeView layout)
-    let musicWidth: CGFloat = showMusic ? 280 : 0
-    let calWidth: CGFloat   = showCal   ? (showCam ? 185 : 230) : 0
-    let camWidth: CGFloat   = showCam   ? 100 : 0
+    var widths: [CGFloat] = []
+    if showMusic    { widths.append(WidgetWidth.music) }
+    if showCal      { widths.append(showCam ? WidgetWidth.calendarWithCam : WidgetWidth.calendar) }
+    if showCam      { widths.append(WidgetWidth.camera) }
 
-    // Divider + spacing
-    var dividers: CGFloat = 0
-    if showMusic && (showCal || showCam) { dividers += 1 }
-    let dividerWidth: CGFloat = 1
-    let spacing: CGFloat = (showCam && showCal) ? 10 : 15
-    let panelCount = (showMusic ? 1 : 0) + (showCal ? 1 : 0) + (showCam ? 1 : 0)
-    let spacingTotal = panelCount > 1 ? spacing * CGFloat(panelCount - 1) + dividers * dividerWidth : 0
+    guard !widths.isEmpty else { return openNotchSize.width }
 
-    let contentWidth = musicWidth + calWidth + camWidth + spacingTotal
-    // Add horizontal padding (matching ContentView's cornerRadius padding * 2 + layout padding * 2)
-    let horizontalPad: CGFloat = 78
-    let computed = contentWidth + horizontalPad
-    return max(computed, openNotchSize.width) // never narrower than shelf width
+    let dividers: CGFloat = showMusic && (showCal || showCam) ? WidgetWidth.dividerWidth : 0
+    let spacingTotal = WidgetWidth.spacing * CGFloat(widths.count - 1)
+    let total = widths.reduce(0, +) + spacingTotal + dividers + WidgetWidth.horizontalPad
+
+    return max(total, 300) // minimum sane width
 }
