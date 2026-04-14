@@ -23,24 +23,8 @@ struct LiquidGlassMusicWidget: View {
         ZStack {
             // ── Glass surface ─────────────────────────────────────────────
             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(.ultraThinMaterial)
-                .environment(\.colorScheme, .dark)
-
-            // ── Shimmer border ────────────────────────────────────────────
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .strokeBorder(
-                    LinearGradient(
-                        colors: [
-                            Color.white.opacity(0.5),
-                            Color.white.opacity(0.07),
-                            Color.white.opacity(0.22),
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
-                    lineWidth: 0.8
-                )
-
+                .glassEffect(in: .rect(cornerRadius: 20))
+            
             // ── Content ───────────────────────────────────────────────────
             HStack(spacing: 10) {
                 albumArtThumbnail
