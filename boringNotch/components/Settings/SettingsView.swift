@@ -696,7 +696,7 @@ struct Media: View {
             } header: {
                 Text("Lock screen")
             } footer: {
-                Text("Tinted glass is a darker version of frosted glass.")
+                Text("Tinted adds a dark tint to the frosted glass.")
                     .foregroundStyle(.secondary)
                     .font(.caption)
             }

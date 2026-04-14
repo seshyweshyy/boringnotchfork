@@ -11,8 +11,8 @@ import SwiftUI
 import Defaults
 
 enum LockScreenWidgetStyle: String, CaseIterable, Identifiable, Defaults.Serializable {
-    case tinted = "Tinted"
     case frosted = "Frosted"
+    case tinted = "Tinted"
     var id: String { rawValue }
 }
 
