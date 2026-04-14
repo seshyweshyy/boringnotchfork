@@ -603,6 +603,7 @@ struct Media: View {
     @Default(.hideNotchOption) var hideNotchOption
     @Default(.enableSneakPeek) private var enableSneakPeek
     @Default(.sneakPeekStyles) var sneakPeekStyles
+    @Default(.lockScreenWidgetStyle) var lockScreenWidgetStyle
 
     @Default(.enableLyrics) var enableLyrics
 
@@ -685,14 +686,20 @@ struct Media: View {
             Section {
                 Defaults.Toggle(key: .lockScreenMusicWidget) {
                     Text("Show music widget on lock screen")
-                    }
-                } header: {
-                    Text("Lock screen")
-                } footer: {
-                    Text("Displays a liquid glass music card below the notch when the screen is locked and a media app is open.")
-                        .foregroundStyle(.secondary)
-                        .font(.caption)
                 }
+                Picker("Glass style", selection: $lockScreenWidgetStyle) {
+                    ForEach(LockScreenWidgetStyle.allCases) { style in
+                        Text(style.rawValue).tag(style)
+                    }
+                }
+                .disabled(!Defaults[.lockScreenMusicWidget])
+            } header: {
+                Text("Lock screen")
+            } footer: {
+                Text("Tinted is a darker version of frosted.")
+                    .foregroundStyle(.secondary)
+                    .font(.caption)
+            }
             
             Section {
                 MusicSlotConfigurationView()

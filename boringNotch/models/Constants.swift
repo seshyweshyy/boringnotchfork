@@ -138,6 +138,7 @@ extension Defaults.Keys {
         default: MusicControlButton.defaultLayout.count
     )
     static let lockScreenMusicWidget = Key<Bool>("lockScreenMusicWidget", default: true)
+    static let lockScreenWidgetStyle = Key<LockScreenWidgetStyle>("lockScreenWidgetStyle", default: .tinted)
     
     // MARK: Battery
     static let showPowerStatusNotifications = Key<Bool>("showPowerStatusNotifications", default: true)
