@@ -41,9 +41,19 @@ final class SharingStateManager: ObservableObject {
 		}
 	}
 
-	func beginInteraction() {
-		activeSessions += 1
-	}
+    func beginInteraction() {
+        activeSessions += 1
+        scheduleWatchdog()
+    }
+
+    private func scheduleWatchdog() {
+        Task { @MainActor in
+            try? await Task.sleep(for: .seconds(30))
+            if self.activeSessions > 0 {
+                self.activeSessions = 0  // force-clear any stuck state
+            }
+        }
+    }
 
 	func endInteraction() {
 		if activeSessions > 0 { activeSessions -= 1 }
