@@ -15,10 +15,10 @@ import AppKit
 import SwiftUI
 import Defaults
 
-// MARK: - Window
-
-class LiquidGlassWidgetWindow: NSPanel {
-
+class LiquidGlassWidgetWindow: BoringNotchSkyLightWindow {
+    // configure() is no longer needed — BoringNotchSkyLightWindow already
+    // sets level, appearance, collectionBehavior, backgroundColor etc.
+    // Just override the things that differ:
     override init(
         contentRect: NSRect,
         styleMask: NSWindow.StyleMask,
@@ -26,27 +26,9 @@ class LiquidGlassWidgetWindow: NSPanel {
         defer flag: Bool
     ) {
         super.init(contentRect: contentRect, styleMask: styleMask, backing: backing, defer: flag)
-        configure()
+        isMovable = false
+        sharingType = .none
     }
-
-    private func configure() {
-        isFloatingPanel       = true
-        isOpaque              = false
-        backgroundColor       = .clear
-        hasShadow             = false
-        isMovable             = false
-        isReleasedWhenClosed  = false
-        titleVisibility       = .hidden
-        titlebarAppearsTransparent = true
-        ignoresMouseEvents    = false   // we handle this per-area via the view
-        level                 = .mainMenu + 3
-        appearance            = NSAppearance(named: .darkAqua)
-        collectionBehavior    = [.fullScreenAuxiliary, .stationary, .canJoinAllSpaces, .ignoresCycle]
-        sharingType           = .none   // hide from screen recordings
-    }
-
-    override var canBecomeKey: Bool  { false }
-    override var canBecomeMain: Bool { false }
 }
 
 // MARK: - Root SwiftUI host
@@ -93,38 +75,30 @@ class LiquidGlassWidgetWindowController {
 
     // MARK: Show
 
+    // AFTER:
     func show(on screen: NSScreen) {
         if window == nil {
             let win = LiquidGlassWidgetWindow(
                 contentRect: screen.frame,
-                styleMask:   [.borderless, .nonactivatingPanel],
-                backing:     .buffered,
-                defer:       false
+                styleMask: [.borderless, .nonactivatingPanel],
+                backing: .buffered,
+                defer: false
             )
             win.contentView = NSHostingView(rootView: LiquidGlassWidgetRoot())
             window = win
         }
 
         guard let win = window else { return }
-
-        // Resize/reposition to cover the target screen
         win.setFrame(screen.frame, display: false)
-
-        // Enable SkyLight so it appears above the lock screen
-        SkyLightOperator.shared.delegateWindow(win)
-
+        win.enableSkyLight()           // ← inherited from BoringNotchSkyLightWindow
         win.orderFrontRegardless()
     }
 
-    // MARK: Hide
-
     func hide() {
         guard let win = window else { return }
-        SkyLightOperator.shared.undelegateWindow(win)
+        win.disableSkyLight()          // ← inherited from BoringNotchSkyLightWindow
         win.orderOut(nil)
     }
-
-    // MARK: Update screen
 
     func updateScreen(_ screen: NSScreen) {
         window?.setFrame(screen.frame, display: true)
