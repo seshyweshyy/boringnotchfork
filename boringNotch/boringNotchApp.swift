@@ -67,6 +67,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var isScreenLocked: Bool = false
     private var windowScreenDidChangeObserver: Any?
     private var dragDetectors: [String: DragDetector] = [:] // UUID -> DragDetector
+    private var cancellables = Set<AnyCancellable>()
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         return false
@@ -87,6 +88,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         cleanupWindows()
         XPCHelperClient.shared.stopMonitoringAccessibilityAuthorization()
     }
+    
+    @MainActor
+   private func showLiquidGlassWidgetIfNeeded() {
+       guard Defaults[.lockScreenMusicWidget] else { return }
+       guard !MusicManager.shared.isPlayerIdle else { return }
+       let screen = window?.screen ?? NSScreen.main ?? NSScreen.screens[0]
+       LiquidGlassWidgetWindowController.shared.show(on: screen)
+   }
 
     @MainActor
     func onScreenLocked(_ notification: Notification) {
@@ -97,6 +106,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         } else {
             enableSkyLightOnAllWindows()
         }
+        showLiquidGlassWidgetIfNeeded()
     }
 
     @MainActor
@@ -108,6 +118,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         } else {
             disableSkyLightOnAllWindows()
         }
+        LiquidGlassWidgetWindowController.shared.hide()
     }
     
     private func broadcastLockState(_ locked: Bool) {
@@ -379,6 +390,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     self?.onScreenUnlocked(notification)
                 }
         }
+        
+        MusicManager.shared.$isPlayerIdle
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] idle in
+                guard let self = self, self.isScreenLocked else { return }
+                if idle {
+                    LiquidGlassWidgetWindowController.shared.hide()
+                } else {
+                    self.showLiquidGlassWidgetIfNeeded()
+                }
+            }
+            .store(in: &cancellables)
 
         KeyboardShortcuts.onKeyDown(for: .toggleSneakPeek) { [weak self] in
             guard let self = self else { return }

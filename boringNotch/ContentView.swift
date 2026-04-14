@@ -360,22 +360,6 @@ struct ContentView: View {
                         .frame(width: computedChinWidth, height: vm.chinHeight)
                 }
             }
-            if vm.isScreenLocked && musicManager.isPlaying && Defaults[.sneakPeekStyles] == .liquidGlass {
-               VStack(spacing: 0) {
-                   Spacer().frame(height: vm.effectiveClosedNotchHeight + 8)
-                   LiquidGlassMusicWidget()
-                       .transition(
-                           .asymmetric(
-                               insertion: .scale(scale: 0.9, anchor: .top).combined(with: .opacity),
-                               removal: .scale(scale: 0.9, anchor: .top).combined(with: .opacity)
-                           )
-                       )
-                   Spacer()
-               }
-               .animation(.spring(response: 0.45, dampingFraction: 0.78), value: vm.isScreenLocked)
-               .zIndex(5)
-               .allowsHitTesting(true)
-           }
         }
         .padding(.bottom, 8)
         .frame(maxWidth: windowSize.width, maxHeight: windowSize.height, alignment: .top)

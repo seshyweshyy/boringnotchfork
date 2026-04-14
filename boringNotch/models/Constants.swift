@@ -55,7 +55,6 @@ enum MediaControllerType: String, CaseIterable, Identifiable, Defaults.Serializa
 enum SneakPeekStyle: String, CaseIterable, Identifiable, Defaults.Serializable {
     case standard = "Default"
     case inline = "Inline"
-    case liquidGlass = "Liquid Glass"
     
     var id: String { self.rawValue }
 }
@@ -138,6 +137,7 @@ extension Defaults.Keys {
         "musicControlSlotLimit",
         default: MusicControlButton.defaultLayout.count
     )
+    static let lockScreenMusicWidget = Key<Bool>("lockScreenMusicWidget", default: true)
     
     // MARK: Battery
     static let showPowerStatusNotifications = Key<Bool>("showPowerStatusNotifications", default: true)

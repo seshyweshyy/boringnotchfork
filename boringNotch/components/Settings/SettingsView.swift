@@ -680,13 +680,19 @@ struct Media: View {
                 }
             } header: {
                 Text("Media playback live activity")
-            } footer: {
-                if sneakPeekStyles == .liquidGlass {
-                    Text("Liquid Glass shows a frosted music card below the notch on track changes and on the lock screen.")
+            }
+            
+            Section {
+                Defaults.Toggle(key: .lockScreenMusicWidget) {
+                    Text("Show music widget on lock screen")
+                    }
+                } header: {
+                    Text("Lock screen")
+                } footer: {
+                    Text("Displays a liquid glass music card below the notch when the screen is locked and a media app is open.")
                         .foregroundStyle(.secondary)
                         .font(.caption)
                 }
-            }
             
             Section {
                 MusicSlotConfigurationView()
