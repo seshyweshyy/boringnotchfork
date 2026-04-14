@@ -524,7 +524,7 @@ struct ContentView: View {
                 .onChange(of: coordinator.currentView) { _, newView in
                     if vm.notchState == .open {
                         withAnimation(.spring(response: 0.42, dampingFraction: 0.8)) {
-                            vm.notchSize = newView == .home ? openNotchHomeSize : openNotchSize
+                            vm.notchSize = newView == .home ? vm.computedHomeSize : openNotchSize
                         }
                     }
                 }

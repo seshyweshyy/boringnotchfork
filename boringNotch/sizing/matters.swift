@@ -80,3 +80,34 @@ enum MusicPlayerImageSizes {
 
     return .init(width: notchWidth, height: notchHeight)
 }
+
+/// Computes the open notch width for the home view based on which widgets are active.
+func computedOpenNotchHomeWidth(
+    showMusic: Bool,
+    showCalendar: Bool,
+    showMirror: Bool,
+    cameraExpanded: Bool,
+    cameraAvailable: Bool
+) -> CGFloat {
+    let showCam = showMirror && cameraAvailable && cameraExpanded
+    let showCal = showCalendar
+
+    // Widget widths (approximate, matching NotchHomeView layout)
+    let musicWidth: CGFloat = showMusic ? 280 : 0
+    let calWidth: CGFloat   = showCal   ? (showCam ? 185 : 230) : 0
+    let camWidth: CGFloat   = showCam   ? 100 : 0
+
+    // Divider + spacing
+    var dividers: CGFloat = 0
+    if showMusic && (showCal || showCam) { dividers += 1 }
+    let dividerWidth: CGFloat = 1
+    let spacing: CGFloat = (showCam && showCal) ? 10 : 15
+    let panelCount = (showMusic ? 1 : 0) + (showCal ? 1 : 0) + (showCam ? 1 : 0)
+    let spacingTotal = panelCount > 1 ? spacing * CGFloat(panelCount - 1) + dividers * dividerWidth : 0
+
+    let contentWidth = musicWidth + calWidth + camWidth + spacingTotal
+    // Add horizontal padding (matching ContentView's cornerRadius padding * 2 + layout padding * 2)
+    let horizontalPad: CGFloat = 78
+    let computed = contentWidth + horizontalPad
+    return max(computed, openNotchSize.width) // never narrower than shelf width
+}

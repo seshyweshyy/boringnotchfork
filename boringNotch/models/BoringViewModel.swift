@@ -43,6 +43,12 @@ class BoringViewModel: NSObject, ObservableObject {
     @Published var isCameraExpanded: Bool = false
     @Published var isRequestingAuthorization: Bool = false
     
+    @Published var openHomeWidth: CGFloat = openNotchHomeSize.width
+
+    var computedHomeSize: CGSize {
+        CGSize(width: openHomeWidth, height: openNotchHomeSize.height)
+    }
+    
     func lockNotch() {
         self.notchSize = CGSize(
             width: closedNotchSize.width + (2 * max(0, effectiveClosedNotchHeight - 12) + 60),
@@ -76,7 +82,9 @@ class BoringViewModel: NSObject, ObservableObject {
             .store(in: &cancellables)
         
         setupDetectorObserver()
+        setupWidgetWidthObserver()
     }
+    
     
     private func setupDetectorObserver() {
         // Publisher for the user’s fullscreen detection setting
@@ -106,6 +114,53 @@ class BoringViewModel: NSObject, ObservableObject {
             .sink { [weak self] shouldHide in
                 withAnimation(.smooth) {
                     self?.hideOnClosed = shouldHide
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func setupWidgetWidthObserver() {
+        Publishers.CombineLatest3(
+            Defaults.publisher(.showCalendar).map(\.newValue),
+            Defaults.publisher(.showMirror).map(\.newValue),
+            $isCameraExpanded
+        )
+        .receive(on: RunLoop.main)
+        .sink { [weak self] cal, mirror, camExpanded in
+            guard let self else { return }
+            let w = computedOpenNotchHomeWidth(
+                showMusic: self.coordinator.musicLiveActivityEnabled,
+                showCalendar: cal,
+                showMirror: mirror,
+                cameraExpanded: camExpanded,
+                cameraAvailable: self.webcamManager.cameraAvailable
+            )
+            self.openHomeWidth = w
+            if self.notchState == .open && self.coordinator.currentView == .home {
+                withAnimation(.spring(response: 0.42, dampingFraction: 0.8)) {
+                    self.notchSize = self.computedHomeSize
+                }
+            }
+        }
+        .store(in: &cancellables)
+
+        // Separately observe musicLiveActivityEnabled via NotificationCenter
+        // since coordinator is an @ObservedObject and its $published vars aren't directly pipeable here
+        coordinator.objectWillChange
+            .receive(on: RunLoop.main)
+            .sink { [weak self] in
+                guard let self else { return }
+                guard self.notchState == .open && self.coordinator.currentView == .home else { return }
+                let w = computedOpenNotchHomeWidth(
+                    showMusic: self.coordinator.musicLiveActivityEnabled,
+                    showCalendar: Defaults[.showCalendar],
+                    showMirror: Defaults[.showMirror],
+                    cameraExpanded: self.isCameraExpanded,
+                    cameraAvailable: self.webcamManager.cameraAvailable
+                )
+                self.openHomeWidth = w
+                withAnimation(.spring(response: 0.42, dampingFraction: 0.8)) {
+                    self.notchSize = self.computedHomeSize
                 }
             }
             .store(in: &cancellables)
@@ -200,7 +255,7 @@ class BoringViewModel: NSObject, ObservableObject {
 
     func open() {
         guard !isScreenLocked else { return }
-        self.notchSize = coordinator.currentView == .home ? openNotchHomeSize : openNotchSize
+        self.notchSize = coordinator.currentView == .home ? computedHomeSize : openNotchSize
         self.notchState = .open
         MusicManager.shared.forceUpdate()
     }

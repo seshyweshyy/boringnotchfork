@@ -33,9 +33,9 @@ struct SettingsView: View {
                 NavigationLink(value: "Appearance") {
                     Label("Appearance", systemImage: "eye")
                 }
-                //NavigationLink(value: "Widgets") {
-                //  Label("Widgets", systemImage: "rectangle.3.group")
-                //}
+                NavigationLink(value: "Widgets") {
+                  Label("Widgets", systemImage: "rectangle.3.group")
+                }
                 NavigationLink(value: "Media") {
                     Label("Media", systemImage: "play.laptopcomputer")
                 }
