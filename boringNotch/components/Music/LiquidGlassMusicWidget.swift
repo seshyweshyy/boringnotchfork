@@ -108,8 +108,39 @@ struct LiquidGlassMusicWidget: View {
                     .padding(.bottom, 8)
             }
             .frame(width: 320)
-            .glassEffect(widgetStyle == .tinted ? .regular : .clear, in: .rect(cornerRadius: 22))
+            .glassEffect(isExpanded ? .regular : (widgetStyle == .tinted ? .regular : .clear), in: .rect(cornerRadius: 22))
             .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            stops: [
+                                .init(color: .white.opacity(isExpanded ? 0.18 : 0), location: 0),
+                                .init(color: .white.opacity(isExpanded ? 0.06 : 0), location: 0.3),
+                                .init(color: .clear, location: 0.6),
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .allowsHitTesting(false)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .strokeBorder(
+                        LinearGradient(
+                            stops: [
+                                .init(color: .white.opacity(isExpanded ? 0.35 : 0), location: 0),
+                                .init(color: .white.opacity(isExpanded ? 0.08 : 0), location: 0.5),
+                                .init(color: .clear, location: 1),
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        ),
+                        lineWidth: 1
+                    )
+                    .allowsHitTesting(false)
+            )
         }
         .shadow(color: .black.opacity(0.22), radius: 30, x: 0, y: 12)
         // ── Album art flip ────────────────────────────────────────────────

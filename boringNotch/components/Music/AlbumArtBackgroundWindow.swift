@@ -10,6 +10,7 @@
 import AppKit
 import SwiftUI
 import Combine
+import Defaults
 
 // MARK: - Window
 
@@ -29,14 +30,28 @@ class AlbumArtBackgroundWindow: BoringNotchSkyLightWindow {
 
 // MARK: - Background View
 
+enum LockScreenClockStyle: String, CaseIterable, Identifiable, Defaults.Serializable {
+    case solid = "Solid"
+    case liquidGlass = "Liquid Glass"
+    var id: String { rawValue }
+}
+
 private struct LockScreenClockView: View {
+    let style: LockScreenClockStyle
+
     @State private var now = Date()
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     private var timeString: String {
         let f = DateFormatter()
-        f.dateFormat = "h:mm"
-        return f.string(from: now)
+        f.locale = Locale.current
+        f.dateFormat = DateFormatter.dateFormat(fromTemplate: "j:mm", options: 0, locale: .current)
+        let result = f.string(from: now)
+        return result.replacingOccurrences(of: " am", with: "")
+                     .replacingOccurrences(of: " pm", with: "")
+                     .replacingOccurrences(of: "am", with: "")
+                     .replacingOccurrences(of: "pm", with: "")
+                     .trimmingCharacters(in: .whitespaces)
     }
 
     private var dateString: String {
@@ -46,16 +61,22 @@ private struct LockScreenClockView: View {
     }
 
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: -10) {
             Text(dateString)
-                .font(.system(size: 20, weight: .regular, design: .default))
-                .foregroundStyle(.white.opacity(0.9))
-                .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 2)
+                .font(.system(size: 22, weight: .semibold, design: .rounded))
+                .foregroundStyle(style == .solid ? .white : .white.opacity(0.85))
 
             Text(timeString)
-                .font(.system(size: 96, weight: .thin, design: .default))
-                .foregroundStyle(.white)
-                .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 2)
+                .font(.system(size: 120, weight: .bold, design: .default))
+                .foregroundStyle(
+                    style == .solid
+                        ? AnyShapeStyle(.white)
+                        : AnyShapeStyle(.ultraThinMaterial)
+                )
+                .shadow(
+                    color: style == .solid ? .black.opacity(0.2) : .clear,
+                    radius: 6, x: 0, y: 2
+                )
         }
         .onReceive(timer) { now = $0 }
     }
@@ -64,6 +85,7 @@ private struct LockScreenClockView: View {
 private struct AlbumArtBackgroundView: View {
     @ObservedObject var musicManager = MusicManager.shared
     @State private var colors: [Color] = [.black, .gray, .black]
+    @Default(.lockScreenClockStyle) var clockStyle
 
     var body: some View {
         GeometryReader { geo in
@@ -77,7 +99,7 @@ private struct AlbumArtBackgroundView: View {
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
-                .overlay(Color.black.opacity(0.15))
+                .overlay(Color.black.opacity(0.1))
                 .ignoresSafeArea()
                 .overlay(
                     RadialGradient(
@@ -87,11 +109,10 @@ private struct AlbumArtBackgroundView: View {
                         endRadius: 400
                     )
                 )
-
                 // Fake lock screen clock — sits in upper-centre, above the gradient
                 VStack {
-                    Spacer().frame(height: geo.size.height * 0.18)
-                    LockScreenClockView()
+                    Spacer().frame(height: geo.size.height * 0.08)
+                    LockScreenClockView(style: clockStyle)
                     Spacer()
                 }
                 .frame(maxWidth: .infinity)

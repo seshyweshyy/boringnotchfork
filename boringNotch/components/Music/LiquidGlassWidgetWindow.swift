@@ -50,6 +50,8 @@ private struct LiquidGlassWidgetRoot: View {
             VStack {
                 Spacer()
                 LiquidGlassMusicWidget(isExpanded: $isExpanded, artNamespace: artNamespace)
+                    .compositingGroup()
+                    .shadow(color: .black.opacity(isExpanded ? 0.5 : 0), radius: isExpanded ? 60 : 0, x: 0, y: isExpanded ? 20 : 0)
                     .transition(
                         .asymmetric(
                             insertion: .scale(scale: 0.92, anchor: .bottom).combined(with: .opacity),
@@ -57,41 +59,18 @@ private struct LiquidGlassWidgetRoot: View {
                         )
                     )
                     .allowsHitTesting(true)
-                Spacer().frame(height: isExpanded ? 160 : 210)
+                Spacer().frame(height: isExpanded ? 140 : 210)
             }
             .frame(width: geo.size.width)
 
             if isExpanded {
-                // X button — absolute top-left of screen
-                VStack {
-                    HStack {
-                        Button {
-                            withAnimation(.spring(response: 0.4, dampingFraction: 0.82)) {
-                                isExpanded = false
-                            }
-                        } label: {
-                            Image(systemName: "xmark")
-                                .font(.system(size: 15, weight: .bold))
-                                .foregroundColor(.white.opacity(0.85))
-                                .frame(width: 34, height: 34)
-                                .background(.ultraThinMaterial, in: Circle())
-                        }
-                        .buttonStyle(.plain)
-                        Spacer()
-                    }
-                    .padding(.leading, 24)
-                    .padding(.top, 24)
-                    Spacer()
-                }
-                .frame(width: geo.size.width, height: geo.size.height)
-                .allowsHitTesting(true)
-
                 // Expanded art — centered horizontally, upper-mid vertically, detached from widget
                 let artSize = min(geo.size.width, geo.size.height) * 0.42
                 ExpandedAlbumArtView(isExpanded: $isExpanded, artNamespace: artNamespace)
                     .frame(width: artSize, height: artSize)
                     .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-                    .shadow(color: .black.opacity(0.45), radius: 40, x: 0, y: 20)
+                    .shadow(color: .black.opacity(0.6), radius: 60, x: 0, y: 30)
+                    .shadow(color: .black.opacity(0.3), radius: 20, x: 0, y: 10)
                     .position(x: geo.size.width / 2, y: geo.size.height * 0.46)
                     .allowsHitTesting(true)
                     .transition(.scale(scale: 0.85).combined(with: .opacity))
@@ -104,6 +83,13 @@ private struct LiquidGlassWidgetRoot: View {
                     AlbumArtBackgroundWindowController.shared.show()
                     NotificationCenter.default.post(name: .lockScreenProfileShouldHide, object: nil)
                 } else {
+                    AlbumArtBackgroundWindowController.shared.hide()
+                    NotificationCenter.default.post(name: .lockScreenProfileShouldShow, object: nil)
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: NSWorkspace.sessionDidBecomeActiveNotification)) { _ in
+                if isExpanded {
+                    isExpanded = false
                     AlbumArtBackgroundWindowController.shared.hide()
                     NotificationCenter.default.post(name: .lockScreenProfileShouldShow, object: nil)
                 }

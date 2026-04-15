@@ -607,6 +607,7 @@ struct Media: View {
     @Default(.enableSneakPeek) private var enableSneakPeek
     @Default(.sneakPeekStyles) var sneakPeekStyles
     @Default(.lockScreenWidgetStyle) var lockScreenWidgetStyle
+    @Default(.lockScreenClockStyle) var lockScreenClockStyle
 
     @Default(.enableLyrics) var enableLyrics
 
@@ -692,6 +693,12 @@ struct Media: View {
                 }
                 Picker("Glass style", selection: $lockScreenWidgetStyle) {
                     ForEach(LockScreenWidgetStyle.allCases) { style in
+                        Text(style.rawValue).tag(style)
+                    }
+                }
+                .disabled(!Defaults[.lockScreenMusicWidget])
+                Picker("Expanded clock style", selection: $lockScreenClockStyle) {
+                    ForEach(LockScreenClockStyle.allCases) { style in
                         Text(style.rawValue).tag(style)
                     }
                 }
