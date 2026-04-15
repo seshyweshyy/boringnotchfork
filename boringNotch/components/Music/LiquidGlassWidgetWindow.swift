@@ -109,7 +109,14 @@ private struct LiquidGlassWidgetRoot: View {
             }
         }
         .ignoresSafeArea()
-        .animation(.spring(response: 0.4, dampingFraction: 0.82), value: isExpanded)
+            .animation(.spring(response: 0.4, dampingFraction: 0.82), value: isExpanded)
+            .onChange(of: isExpanded) { _, expanded in
+                if expanded {
+                    NotificationCenter.default.post(name: .albumArtBackgroundShouldShow, object: nil)
+                } else {
+                    NotificationCenter.default.post(name: .albumArtBackgroundShouldHide, object: nil)
+                }
+            }
     }
 }
 

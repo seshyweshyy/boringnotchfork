@@ -96,6 +96,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
               NSWorkspace.shared.runningApplications.contains(where: { $0.bundleIdentifier == bundleID }) else { return }
         let screen = window?.screen ?? NSScreen.main ?? NSScreen.screens[0]
         LiquidGlassWidgetWindowController.shared.show(on: screen)
+        AlbumArtBackgroundWindowController.shared.show(on: screen)
     }
 
     @MainActor
@@ -120,6 +121,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             disableSkyLightOnAllWindows()
         }
         LiquidGlassWidgetWindowController.shared.hide()
+        AlbumArtBackgroundWindowController.shared.hide()
     }
     
     private func broadcastLockState(_ locked: Bool) {
