@@ -21,8 +21,7 @@ class AlbumArtBackgroundWindow: BoringNotchSkyLightWindow {
         defer flag: Bool
     ) {
         super.init(contentRect: contentRect, styleMask: styleMask, backing: backing, defer: flag)
-        // Sit just above the wallpaper, below the login UI and widget window
-        level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.desktopWindow)) + 1)
+        level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.desktopWindow)))
         isMovable = false
         sharingType = .none
     }
@@ -69,6 +68,8 @@ private struct AlbumArtBackgroundView: View {
 extension Notification.Name {
     static let albumArtBackgroundShouldShow = Notification.Name("albumArtBackgroundShouldShow")
     static let albumArtBackgroundShouldHide = Notification.Name("albumArtBackgroundShouldHide")
+    static let lockScreenProfileShouldHide  = Notification.Name("lockScreenProfileShouldHide")
+    static let lockScreenProfileShouldShow  = Notification.Name("lockScreenProfileShouldShow")
 }
 
 // MARK: - Controller
@@ -104,5 +105,29 @@ class AlbumArtBackgroundWindowController {
 
     func updateScreen(_ screen: NSScreen) {
         window?.setFrame(screen.frame, display: true)
+    }
+}
+
+// MARK: - Array safe subscript
+private extension Array {
+    subscript(safe index: Int, fallback fallback: Element) -> Element {
+        indices.contains(index) ? self[index] : fallback
+    }
+}
+
+// MARK: - Color helpers
+private extension Color {
+    func saturated(by factor: CGFloat) -> Color {
+        let ns = NSColor(self).usingColorSpace(.sRGB) ?? NSColor(self)
+        var h: CGFloat = 0, s: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        ns.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
+        return Color(hue: h, saturation: min(s * factor, 1), brightness: b, opacity: a)
+    }
+
+    func darkened(by amount: CGFloat) -> Color {
+        let ns = NSColor(self).usingColorSpace(.sRGB) ?? NSColor(self)
+        var h: CGFloat = 0, s: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        ns.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
+        return Color(hue: h, saturation: s, brightness: max(b - amount, 0), opacity: a)
     }
 }

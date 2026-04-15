@@ -32,19 +32,19 @@ struct LiquidGlassMusicWidget: View {
 
     var body: some View {
         GlassEffectContainer {
-            VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: isExpanded ? .center : .leading, spacing: 0) {
                 
                 // ── Top row: album art + song info + visualiser ───────────────
                 HStack(alignment: .center, spacing: 12) {
-                    albumArtThumbnail
+                    if !isExpanded { albumArtThumbnail }
                     
-                    VStack(alignment: .leading, spacing: 3) {
+                    VStack(alignment: isExpanded ? .center : .leading, spacing: 3) {
                         MarqueeText(
                             .constant(musicManager.songTitle.isEmpty ? "Not Playing" : musicManager.songTitle),
                             font: .headline,
                             nsFont: .headline,
                             textColor: .white,
-                            frameWidth: 180
+                            frameWidth: isExpanded ? 260 : 180
                         )
                         .fontWeight(.semibold)
 
@@ -70,7 +70,7 @@ struct LiquidGlassMusicWidget: View {
                         .padding(.trailing, 4)
                 }
                 .padding(.horizontal, 14)
-                .padding(.top, 14)
+                .padding(.top, isExpanded ? 10 : 14)
                 
                 // ── Progress bar ──────────────────────────────────────────────
                 TimelineView(.animation(minimumInterval: 0.5, paused: !musicManager.isPlaying)) { timeline in

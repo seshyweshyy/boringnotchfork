@@ -46,7 +46,7 @@ private struct LiquidGlassWidgetRoot: View {
                 .contentShape(Rectangle())
                 .allowsHitTesting(false)
 
-            // Widget pinned to bottom-centre
+            // Widget pinned to bottom-centre, moves down when expanded
             VStack {
                 Spacer()
                 LiquidGlassMusicWidget(isExpanded: $isExpanded, artNamespace: artNamespace)
@@ -57,7 +57,7 @@ private struct LiquidGlassWidgetRoot: View {
                         )
                     )
                     .allowsHitTesting(true)
-                Spacer().frame(height: 210)
+                Spacer().frame(height: isExpanded ? 160 : 210)
             }
             .frame(width: geo.size.width)
 
@@ -98,12 +98,12 @@ private struct LiquidGlassWidgetRoot: View {
                 .allowsHitTesting(true)
 
                 // Expanded art — centered horizontally, upper-mid vertically, detached from widget
-                let artSize = min(geo.size.width, geo.size.height) * 0.45
+                let artSize = min(geo.size.width, geo.size.height) * 0.42
                 ExpandedAlbumArtView(isExpanded: $isExpanded, artNamespace: artNamespace)
                     .frame(width: artSize, height: artSize)
                     .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
                     .shadow(color: .black.opacity(0.45), radius: 40, x: 0, y: 20)
-                    .position(x: geo.size.width / 2, y: geo.size.height * 0.38)
+                    .position(x: geo.size.width / 2, y: geo.size.height * 0.46)
                     .allowsHitTesting(true)
                     .transition(.scale(scale: 0.85).combined(with: .opacity))
             }
@@ -113,8 +113,10 @@ private struct LiquidGlassWidgetRoot: View {
             .onChange(of: isExpanded) { _, expanded in
                 if expanded {
                     NotificationCenter.default.post(name: .albumArtBackgroundShouldShow, object: nil)
+                    NotificationCenter.default.post(name: .lockScreenProfileShouldHide, object: nil)
                 } else {
                     NotificationCenter.default.post(name: .albumArtBackgroundShouldHide, object: nil)
+                    NotificationCenter.default.post(name: .lockScreenProfileShouldShow, object: nil)
                 }
             }
     }

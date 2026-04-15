@@ -105,6 +105,72 @@ extension NSImage {
         
     }
     
+    // Extracts `count` visually distinct dominant colours using simple bucket-based k-means.
+    func dominantColors(count: Int = 3, completion: @escaping ([NSColor]) -> Void) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            guard let cgImage = self.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+                DispatchQueue.main.async { completion([]) }
+                return
+            }
+
+            // Downsample to a tiny thumbnail for speed
+            let thumb = 64
+            guard let ctx = CGContext(data: nil, width: thumb, height: thumb,
+                                       bitsPerComponent: 8, bytesPerRow: thumb * 4,
+                                       space: CGColorSpaceCreateDeviceRGB(),
+                                       bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else {
+                DispatchQueue.main.async { completion([]) }
+                return
+            }
+            ctx.draw(cgImage, in: CGRect(x: 0, y: 0, width: thumb, height: thumb))
+            guard let data = ctx.data else {
+                DispatchQueue.main.async { completion([]) }
+                return
+            }
+
+            let pixels = data.bindMemory(to: UInt32.self, capacity: thumb * thumb)
+            var buckets = Array(repeating: (r: 0.0, g: 0.0, b: 0.0, n: 0), count: count)
+
+            // Initialise bucket centres spread across image
+            for i in 0..<count {
+                let p = pixels[(i * thumb * thumb / count)]
+                buckets[i] = (r: Double(p & 0xFF) / 255,
+                              g: Double((p >> 8) & 0xFF) / 255,
+                              b: Double((p >> 16) & 0xFF) / 255,
+                              n: 1)
+            }
+
+            // 8 k-means iterations
+            for _ in 0..<8 {
+                var sums = Array(repeating: (r: 0.0, g: 0.0, b: 0.0, n: 0), count: count)
+                for i in 0..<(thumb * thumb) {
+                    let p = pixels[i]
+                    let r = Double(p & 0xFF) / 255
+                    let g = Double((p >> 8) & 0xFF) / 255
+                    let b = Double((p >> 16) & 0xFF) / 255
+                    var best = 0
+                    var bestDist = Double.greatestFiniteMagnitude
+                    for k in 0..<count {
+                        let d = (r - buckets[k].r) * (r - buckets[k].r)
+                              + (g - buckets[k].g) * (g - buckets[k].g)
+                              + (b - buckets[k].b) * (b - buckets[k].b)
+                        if d < bestDist { bestDist = d; best = k }
+                    }
+                    sums[best].r += r; sums[best].g += g; sums[best].b += b; sums[best].n += 1
+                }
+                for k in 0..<count where sums[k].n > 0 {
+                    buckets[k] = (r: sums[k].r / Double(sums[k].n),
+                                   g: sums[k].g / Double(sums[k].n),
+                                   b: sums[k].b / Double(sums[k].n),
+                                   n: sums[k].n)
+                }
+            }
+
+            let colors = buckets.map { NSColor(red: $0.r, green: $0.g, blue: $0.b, alpha: 1) }
+            DispatchQueue.main.async { completion(colors) }
+        }
+    }
+    
     func getBrightness() -> CGFloat {
         guard let cgImage = self.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
             return 0
