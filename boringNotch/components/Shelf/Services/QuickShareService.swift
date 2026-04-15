@@ -48,10 +48,30 @@ class QuickShareService: ObservableObject {
         let services = await finder.findApplicableServices(for: testItems)
 
         var providers: [QuickShareProvider] = []
+        
+        let excludedProviders: Set<String> = ["Simulator"]
 
         for svc in services {
             let title = svc.title
-            let imgData = svc.image.tiffRepresentation
+            guard !excludedProviders.contains(title) else { continue }
+            let imgData: Data? = {
+                // Try to find the app by its display/bundle name and use its real icon
+                let allApps = FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask)
+                    + FileManager.default.urls(for: .applicationDirectory, in: .systemDomainMask)
+                for dir in allApps {
+                    guard let contents = try? FileManager.default.contentsOfDirectory(at: dir, includingPropertiesForKeys: nil) else { continue }
+                    for appURL in contents where appURL.pathExtension == "app" {
+                        let bundle = Bundle(url: appURL)
+                        let name = bundle?.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
+                            ?? bundle?.object(forInfoDictionaryKey: "CFBundleName") as? String
+                            ?? appURL.deletingPathExtension().lastPathComponent
+                        if name == title {
+                            return NSWorkspace.shared.icon(forFile: appURL.path).tiffRepresentation
+                        }
+                    }
+                }
+                return nil // Share Menu fallback — no image
+            }()
             let supportsRawText = svc.canPerform(withItems: ["Test Text"])
             let provider = QuickShareProvider(id: title, imageData: imgData, supportsRawText: supportsRawText)
             if !providers.contains(provider) {

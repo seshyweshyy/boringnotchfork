@@ -296,6 +296,9 @@ struct GeneralSettings: View {
                 Defaults.Toggle(key: .closeGestureEnabled) {
                     Text("Close gesture")
                 }
+                Defaults.Toggle(key: .swipeToCycleViews) {
+                    Text("Swipe to cycle views")
+                }
                 Slider(value: $gestureSensitivity, in: 100...300, step: 100) {
                     HStack {
                         Text("Gesture sensitivity")
@@ -315,7 +318,7 @@ struct GeneralSettings: View {
             }
         } footer: {
             Text(
-                "Two-finger swipe up on notch to close, two-finger swipe down on notch to open when **Open notch on hover** option is disabled"
+                "Two-finger swipe up on notch to close, two-finger swipe down on notch to open when 'Open notch on hover' option is disabled or to cycle through activities when notch is expanded"
             )
             .multilineTextAlignment(.trailing)
             .foregroundStyle(.secondary)
@@ -983,17 +986,16 @@ struct Shelf: View {
                 Picker("Quick Share Service", selection: $quickShareProvider) {
                     ForEach(quickShareService.availableProviders, id: \.id) { provider in
                         HStack {
-                            Group {
-                                if let imgData = provider.imageData, let nsImg = NSImage(data: imgData) {
-                                    Image(nsImage: nsImg)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                } else {
-                                    Image(systemName: "square.and.arrow.up")
-                                }
+                            if let imgData = provider.imageData, let nsImg = NSImage(data: imgData) {
+                                Image(nsImage: nsImg)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 16, height: 16)
+                            } else {
+                                Image(systemName: "square.and.arrow.up")
+                                    .frame(width: 16, height: 16)
+                                    .foregroundColor(.accentColor)
                             }
-                            .frame(width: 16, height: 16)
-                            .foregroundColor(.accentColor)
                             Text(provider.id)
                         }
                         .tag(provider.id)

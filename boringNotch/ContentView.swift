@@ -668,6 +668,7 @@ struct ContentView: View {
 
             let openThreshold: CGFloat = min(Defaults[.gestureSensitivity] * 0.35, 70)
             if translation > openThreshold {
+                guard Defaults[.swipeToCycleViews] else { return }
                 let destination: NotchViews = coordinator.currentView == .home ? .shelf : .home
                 lockedView = destination
                 hasTriggeredSwipe = true
