@@ -46,6 +46,7 @@ private struct LiquidGlassWidgetRoot: View {
                 .contentShape(Rectangle())
                 .allowsHitTesting(false)
 
+            // Widget pinned to bottom-centre
             VStack {
                 Spacer()
                 LiquidGlassMusicWidget(isExpanded: $isExpanded, artNamespace: artNamespace)
@@ -60,19 +61,51 @@ private struct LiquidGlassWidgetRoot: View {
             }
             .frame(width: geo.size.width)
 
-            // Expanded album art overlay
             if isExpanded {
+                // Full-screen tap-to-dismiss layer (behind art)
+                Color.clear
+                    .contentShape(Rectangle())
+                    .allowsHitTesting(true)
+                    .onTapGesture {
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.82)) {
+                            isExpanded = false
+                        }
+                    }
+                    .frame(width: geo.size.width, height: geo.size.height)
+
+                // X button — absolute top-left of screen
                 VStack {
+                    HStack {
+                        Button {
+                            withAnimation(.spring(response: 0.4, dampingFraction: 0.82)) {
+                                isExpanded = false
+                            }
+                        } label: {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 15, weight: .bold))
+                                .foregroundColor(.white.opacity(0.85))
+                                .frame(width: 34, height: 34)
+                                .background(.ultraThinMaterial, in: Circle())
+                        }
+                        .buttonStyle(.plain)
+                        Spacer()
+                    }
+                    .padding(.leading, 24)
+                    .padding(.top, 24)
                     Spacer()
-                    ExpandedAlbumArtView(isExpanded: $isExpanded, artNamespace: artNamespace)
-                        .frame(width: 320)
-                        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
-                        .shadow(color: .black.opacity(0.35), radius: 40, x: 0, y: 20)
-                        .allowsHitTesting(true)
-                    Spacer().frame(height: 120)
                 }
-                .frame(width: geo.size.width)
-                .transition(.opacity)
+                .frame(width: geo.size.width, height: geo.size.height)
+                .allowsHitTesting(true)
+
+                // Expanded art — centered horizontally, upper-mid vertically, detached from widget
+                let artSize = min(geo.size.width, geo.size.height) * 0.45
+                ExpandedAlbumArtView(isExpanded: $isExpanded, artNamespace: artNamespace)
+                    .frame(width: artSize, height: artSize)
+                    .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+                    .shadow(color: .black.opacity(0.45), radius: 40, x: 0, y: 20)
+                    .position(x: geo.size.width / 2, y: geo.size.height * 0.38)
+                    .allowsHitTesting(true)
+                    .transition(.scale(scale: 0.85).combined(with: .opacity))
             }
         }
         .ignoresSafeArea()

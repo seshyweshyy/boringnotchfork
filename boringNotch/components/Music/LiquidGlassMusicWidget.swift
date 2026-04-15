@@ -135,7 +135,9 @@ struct LiquidGlassMusicWidget: View {
                 .matchedGeometryEffect(id: "albumArt", in: artNamespace)
                 .rotation3DEffect(.degrees(rotationDegrees), axis: (x: 0, y: 1, z: 0), perspective: 0.4)
                 .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 3)
+                .opacity(isExpanded ? 0 : 1)
         }
         .buttonStyle(.plain)
+        .disabled(isExpanded)
     }
 }
