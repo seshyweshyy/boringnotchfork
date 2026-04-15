@@ -29,31 +29,73 @@ class AlbumArtBackgroundWindow: BoringNotchSkyLightWindow {
 
 // MARK: - Background View
 
+private struct LockScreenClockView: View {
+    @State private var now = Date()
+    private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
+    private var timeString: String {
+        let f = DateFormatter()
+        f.dateFormat = "h:mm"
+        return f.string(from: now)
+    }
+
+    private var dateString: String {
+        let f = DateFormatter()
+        f.dateFormat = "EEE d MMM"
+        return f.string(from: now)
+    }
+
+    var body: some View {
+        VStack(spacing: 4) {
+            Text(dateString)
+                .font(.system(size: 20, weight: .regular, design: .default))
+                .foregroundStyle(.white.opacity(0.9))
+                .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 2)
+
+            Text(timeString)
+                .font(.system(size: 96, weight: .thin, design: .default))
+                .foregroundStyle(.white)
+                .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 2)
+        }
+        .onReceive(timer) { now = $0 }
+    }
+}
+
 private struct AlbumArtBackgroundView: View {
     @ObservedObject var musicManager = MusicManager.shared
     @State private var colors: [Color] = [.black, .gray, .black]
 
     var body: some View {
-        ZStack {
-            LinearGradient(
-                stops: [
-                    .init(color: colors[0], location: 0),
-                    .init(color: colors[safe: 1, fallback: colors[0]], location: 0.5),
-                    .init(color: colors[safe: 2, fallback: colors[0]], location: 1.0),
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .overlay(Color.black.opacity(0.15))
-            .ignoresSafeArea()
-            .overlay(
-                RadialGradient(
-                    colors: [colors[0].opacity(0.3), .clear],
-                    center: .center,
-                    startRadius: 0,
-                    endRadius: 400
+        GeometryReader { geo in
+            ZStack {
+                LinearGradient(
+                    stops: [
+                        .init(color: colors[0], location: 0),
+                        .init(color: colors[safe: 1, fallback: colors[0]], location: 0.5),
+                        .init(color: colors[safe: 2, fallback: colors[0]], location: 1.0),
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
                 )
-            )
+                .overlay(Color.black.opacity(0.15))
+                .ignoresSafeArea()
+                .overlay(
+                    RadialGradient(
+                        colors: [colors[0].opacity(0.3), .clear],
+                        center: .center,
+                        startRadius: 0,
+                        endRadius: 400
+                    )
+                )
+
+                // Fake lock screen clock — sits in upper-centre, above the gradient
+                VStack {
+                    Spacer().frame(height: geo.size.height * 0.18)
+                    LockScreenClockView()
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity)
+            }
         }
         .onChange(of: musicManager.artFlipSignal) { _, signal in
             signal.art.dominantColors(count: 3) { nsColors in
