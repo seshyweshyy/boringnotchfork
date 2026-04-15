@@ -65,8 +65,8 @@ class QuickShareService: ObservableObject {
             providers.insert(ad, at: 0)
         }
 
-        if !providers.contains(where: { $0.id == "System Share Menu" }) {
-            providers.append(QuickShareProvider(id: "System Share Menu", imageData: nil, supportsRawText: true))
+        if !providers.contains(where: { $0.id == "Share Menu" }) {
+            providers.append(QuickShareProvider(id: "Share Menu", imageData: nil, supportsRawText: true))
         }
 
         self.availableProviders = providers
@@ -206,6 +206,6 @@ extension QuickShareProvider {
         if let airdrop = svc.availableProviders.first(where: { $0.id == "AirDrop" }) {
             return airdrop
         }
-        return svc.availableProviders.first ?? QuickShareProvider(id: "System Share Menu", imageData: nil, supportsRawText: true)
+        return svc.availableProviders.first ?? QuickShareProvider(id: "Share Menu", imageData: nil, supportsRawText: true)
     }
 }
