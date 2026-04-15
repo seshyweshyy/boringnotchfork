@@ -21,6 +21,9 @@ struct LiquidGlassMusicWidget: View {
     @Default(.playerColorTinting) var playerColorTinting
     @Default(.lockScreenWidgetStyle) var widgetStyle
 
+    @Binding var isExpanded: Bool
+    var artNamespace: Namespace.ID
+
     @State private var displayedArt: NSImage = MusicManager.shared.albumArt
     @State private var rotationDegrees: Double = 0
     @State private var sliderValue: Double = 0
@@ -119,12 +122,20 @@ struct LiquidGlassMusicWidget: View {
     }
 
     private var albumArtThumbnail: some View {
-        Image(nsImage: displayedArt)
-            .resizable()
-            .aspectRatio(1, contentMode: .fill)
-            .frame(width: 56, height: 56)
-            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-            .rotation3DEffect(.degrees(rotationDegrees), axis: (x: 0, y: 1, z: 0), perspective: 0.4)
-            .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 3)
+        Button {
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.82)) {
+                isExpanded = true
+            }
+        } label: {
+            Image(nsImage: displayedArt)
+                .resizable()
+                .aspectRatio(1, contentMode: .fill)
+                .frame(width: 56, height: 56)
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .matchedGeometryEffect(id: "albumArt", in: artNamespace)
+                .rotation3DEffect(.degrees(rotationDegrees), axis: (x: 0, y: 1, z: 0), perspective: 0.4)
+                .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 3)
+        }
+        .buttonStyle(.plain)
     }
 }

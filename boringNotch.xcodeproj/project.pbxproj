@@ -106,6 +106,7 @@
 		14E9FEAA2C70BF610062E83F /* DownloadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14E9FEA92C70BF610062E83F /* DownloadView.swift */; };
 		14E9FEAE2C7325770062E83F /* Button+Bouncing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14E9FEAD2C7325770062E83F /* Button+Bouncing.swift */; };
 		14FC6E502C7DED5600C7BEA5 /* DataTypes+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14FC6E4F2C7DED5600C7BEA5 /* DataTypes+Extensions.swift */; };
+		43130CB62F8F37EF00BA14A1 /* ExpandedAlbumArtView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43130CB52F8F37EE00BA14A1 /* ExpandedAlbumArtView.swift */; };
 		432A89E02F8A7C7500237ABF /* BottomRoundedRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432A89DF2F8A7C7500237ABF /* BottomRoundedRectangle.swift */; };
 		432CB8EF2F8DC2FD00D5FE00 /* LiquidGlassMusicWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432CB8EE2F8DC2FB00D5FE00 /* LiquidGlassMusicWidget.swift */; };
 		432CB8F12F8DCAD900D5FE00 /* LiquidGlassWidgetWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432CB8F02F8DCAD000D5FE00 /* LiquidGlassWidgetWindow.swift */; };
@@ -280,6 +281,7 @@
 		14E9FEA92C70BF610062E83F /* DownloadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadView.swift; sourceTree = "<group>"; };
 		14E9FEAD2C7325770062E83F /* Button+Bouncing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Button+Bouncing.swift"; sourceTree = "<group>"; };
 		14FC6E4F2C7DED5600C7BEA5 /* DataTypes+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataTypes+Extensions.swift"; sourceTree = "<group>"; };
+		43130CB52F8F37EE00BA14A1 /* ExpandedAlbumArtView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandedAlbumArtView.swift; sourceTree = "<group>"; };
 		432A89DF2F8A7C7500237ABF /* BottomRoundedRectangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomRoundedRectangle.swift; sourceTree = "<group>"; };
 		432CB8EE2F8DC2FB00D5FE00 /* LiquidGlassMusicWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassMusicWidget.swift; sourceTree = "<group>"; };
 		432CB8F02F8DCAD000D5FE00 /* LiquidGlassWidgetWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassWidgetWindow.swift; sourceTree = "<group>"; };
@@ -704,6 +706,7 @@
 		B186542E2C6F453B000B926A /* Music */ = {
 			isa = PBXGroup;
 			children = (
+				43130CB52F8F37EE00BA14A1 /* ExpandedAlbumArtView.swift */,
 				432CB8F02F8DCAD000D5FE00 /* LiquidGlassWidgetWindow.swift */,
 				432CB8EE2F8DC2FB00D5FE00 /* LiquidGlassMusicWidget.swift */,
 				B19424082CD0FEFE003E5DC2 /* LottieAnimationView.swift */,
@@ -946,6 +949,7 @@
 				11EFCD702E8E92D600D0B974 /* ShelfItemViewModel.swift in Sources */,
 				1153BDA72D99B22200979FB0 /* YouTubeMusicController.swift in Sources */,
 				1163988F2DF5CC870052E6AF /* CalendarModel.swift in Sources */,
+				43130CB62F8F37EF00BA14A1 /* ExpandedAlbumArtView.swift in Sources */,
 				1153BD9A2D98824300979FB0 /* SpotifyController.swift in Sources */,
 				118EBE292E946B3F00D54B5A /* ShareServiceFinder.swift in Sources */,
 				B19424092CD0FF01003E5DC2 /* LottieAnimationView.swift in Sources */,

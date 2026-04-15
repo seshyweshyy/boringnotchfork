@@ -37,31 +37,39 @@ class LiquidGlassWidgetWindow: BoringNotchSkyLightWindow {
 /// Clicks outside the widget rect pass through to the desktop.
 private struct LiquidGlassWidgetRoot: View {
     @ObservedObject var musicManager = MusicManager.shared
+    @State private var isExpanded: Bool = false
+    @Namespace private var artNamespace
 
     var body: some View {
         GeometryReader { geo in
             Color.clear
-                // Make the entire background click-through
                 .contentShape(Rectangle())
                 .allowsHitTesting(false)
 
             VStack {
                 Spacer()
-                // Widget centred, sitting ~110 pt from the bottom (above profile icon)
-                LiquidGlassMusicWidget()
+                LiquidGlassMusicWidget(isExpanded: $isExpanded, artNamespace: artNamespace)
                     .transition(
                         .asymmetric(
                             insertion: .scale(scale: 0.92, anchor: .bottom).combined(with: .opacity),
                             removal:   .scale(scale: 0.92, anchor: .bottom).combined(with: .opacity)
                         )
                     )
-                    // allowsHitTesting true so controls are tappable
                     .allowsHitTesting(true)
                 Spacer().frame(height: 210)
             }
             .frame(width: geo.size.width)
+
+            // Expanded album art overlay
+            if isExpanded {
+                ExpandedAlbumArtView(isExpanded: $isExpanded, artNamespace: artNamespace)
+                    .frame(width: geo.size.width, height: geo.size.height)
+                    .allowsHitTesting(true)
+                    .transition(.opacity)
+            }
         }
         .ignoresSafeArea()
+        .animation(.spring(response: 0.4, dampingFraction: 0.82), value: isExpanded)
     }
 }
 
