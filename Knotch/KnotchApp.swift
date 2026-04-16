@@ -132,12 +132,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 try? await Task.sleep(for: .milliseconds(200))
                 await MainActor.run {
                     coordinator.isScreenLocked = false
-                    withAnimation(.spring(response: 0.38, dampingFraction: 0.72)) {
-                        vm.isScreenLocked = false
-                    }
+                    // Set isUnlockAnimating BEFORE isScreenLocked goes false
+                    // so NotchLayout never sees a frame where both are false
+                    vm.isUnlockAnimating = true
+                    vm.isScreenLocked = false
                     for viewModel in viewModels.values {
-                        withAnimation(.spring(response: 0.38, dampingFraction: 0.72)) {
-                            viewModel.isScreenLocked = false
+                        viewModel.isUnlockAnimating = true
+                        viewModel.isScreenLocked = false
+                    }
+                    // Clear the unlock animation after it plays
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.55) {
+                        withAnimation(.spring(response: 0.40, dampingFraction: 0.80)) {
+                            self.vm.isUnlockAnimating = false
+                            for viewModel in self.viewModels.values {
+                                viewModel.isUnlockAnimating = false
+                            }
                         }
                     }
                 }

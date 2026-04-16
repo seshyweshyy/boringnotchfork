@@ -44,6 +44,8 @@ class BoringViewModel: NSObject, ObservableObject {
     @Published var isCameraExpanded: Bool = false
     @Published var isRequestingAuthorization: Bool = false
     
+    @Published var isUnlockAnimating: Bool = false
+    
     @Published var openHomeWidth: CGFloat = openNotchHomeSize.width
 
     var computedHomeSize: CGSize {
