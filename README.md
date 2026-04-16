@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <a href="http://theboring.name"><img src="https://framerusercontent.com/images/RFK4vs0kn8pRMuOO58JeyoemXA.png?scale-down-to=256" alt="Boring Notch" width="150"></a>
+  <a><img src="https://github.com/user-attachments/assets/e0c2c051-2776-42dc-8720-461b785f0704" alt="Knotch" width="150"></a>
   <br>
   Knotch
   <br>
@@ -11,10 +11,10 @@
 Say hello to **Knotch**, a fork of Boring.Notch, enhancing the coolest way to make your MacBook’s notch the star of the show! Say goodbye to boring status bars: with Boring Notch, your notch transforms into a dynamic music control center, complete with a vibrant visualizer and all the essential music controls you need. But that’s just the start! Boring Notch also offers calendar integration, a handy file shelf with AirDrop support, a complete MacOS HUD replacement and more!
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/2d5f69c1-6e7b-4bc2-a6f1-bb9e27cf88a8" alt="Demo GIF" />
+  <img src="https://github.com/user-attachments/assets/657cf681-9098-4b21-aa07-a21880023ce9" alt="Demo GIF" />
 </p>
 
-<!--https://github.com/user-attachments/assets/19b87973-4b3a-4853-b532-7e82d1d6b040-->
+<!--https://github.com/user-attachments/assets/657cf681-9098-4b21-aa07-a21880023ce9-->
 ---
 <!--## Table of Contents
 - [Installation](#installation)
@@ -103,7 +103,7 @@ brew install --cask TheBoredTeam/boring-notch/boring-notch
 - [ ] Bluetooth Live Activity (connect/disconnect for bluetooth devices) 
 - [ ] Weather integration ⛅️
 - [ ] Customizable Layout options 🛠️
-- [ ] Lock Screen Widgets 🔒
+- [x] Lock Screen Widgets 🔒
 - [ ] Extension system 🧩
 - [ ] Notifications (under consideration) 🔔
 <!-- - [ ] Clipboard history manager 📌 `Extension` -->
