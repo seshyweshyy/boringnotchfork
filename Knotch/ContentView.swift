@@ -298,7 +298,7 @@ struct ContentView: View {
                                 try? await Task.sleep(for: .milliseconds(100))
                                 guard !Task.isCancelled else { return }
                                 await MainActor.run {
-                                    if self.vm.notchState == .open && !self.isHovering && !self.vm.isBatteryPopoverActive && !SharingStateManager.shared.preventNotchClose {
+                                    if self.vm.notchState == .open && !self.isHovering && !self.vm.isBatteryPopoverActive && !self.vm.isMediaOutputPopoverActive && !SharingStateManager.shared.preventNotchClose {
                                         self.vm.close()
                                     }
                                 }
@@ -320,6 +320,20 @@ struct ContentView: View {
                                 guard !Task.isCancelled else { return }
                                 await MainActor.run {
                                     if !self.vm.isBatteryPopoverActive && !self.isHovering && self.vm.notchState == .open && !SharingStateManager.shared.preventNotchClose {
+                                        self.vm.close()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .onChange(of: vm.isMediaOutputPopoverActive) {
+                        if !vm.isMediaOutputPopoverActive && !isHovering && vm.notchState == .open && !SharingStateManager.shared.preventNotchClose {
+                            hoverTask?.cancel()
+                            hoverTask = Task {
+                                try? await Task.sleep(for: .milliseconds(100))
+                                guard !Task.isCancelled else { return }
+                                await MainActor.run {
+                                    if self.vm.notchState == .open && !self.isHovering && !self.vm.isMediaOutputPopoverActive && !SharingStateManager.shared.preventNotchClose {
                                         self.vm.close()
                                     }
                                 }

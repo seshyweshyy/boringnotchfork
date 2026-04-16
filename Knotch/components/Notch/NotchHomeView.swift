@@ -380,35 +380,172 @@ struct VolumeControlView: View {
 // MARK: - Audio Output Button
 
 struct AudioOutputButton: View {
-    @State private var icon: String = audioOutputIcon()
-    
+    @ObservedObject private var routeManager = AudioRouteManager.shared
+    @StateObject private var volumeModel = MediaOutputVolumeViewModel()
+    @State private var isPopoverPresented = false
+    @State private var isHoveringPopover = false
+    @EnvironmentObject var vm: BoringViewModel
+
+    private var buttonIcon: String {
+        routeManager.activeDevice?.iconName ?? "speaker.wave.2"
+    }
+
     var body: some View {
-        HoverButton(icon: icon, scale: .medium) {
-            if let url = URL(string: "x-apple.systempreferences:com.apple.Sound-Settings.extension") {
-                NSWorkspace.shared.open(url)
+        HoverButton(icon: buttonIcon, scale: .medium) {
+            isPopoverPresented.toggle()
+            if isPopoverPresented {
+                routeManager.refreshDevices()
             }
         }
-        .onAppear {
-            icon = audioOutputIcon()
-            startObservingOutputDevice()
+        .popover(isPresented: $isPopoverPresented, arrowEdge: .bottom) {
+            MediaOutputSelectorPopover(
+                routeManager: routeManager,
+                volumeModel: volumeModel,
+                onHoverChanged: { hovering in
+                    isHoveringPopover = hovering
+                },
+                dismiss: {
+                    isPopoverPresented = false
+                    isHoveringPopover = false
+                    vm.isMediaOutputPopoverActive = false
+                }
+            )
         }
-    }
-    
-    private func startObservingOutputDevice() {
-        var propAddr = AudioObjectPropertyAddress(
-            mSelector: kAudioHardwarePropertyDefaultOutputDevice,
-            mScope: kAudioObjectPropertyScopeGlobal,
-            mElement: kAudioObjectPropertyElementMain
-        )
-        AudioObjectAddPropertyListenerBlock(
-            AudioObjectID(kAudioObjectSystemObject),
-            &propAddr,
-            DispatchQueue.main
-        ) { _, _ in
-            icon = audioOutputIcon()
+        .onChange(of: isPopoverPresented) { _, presented in
+            vm.isMediaOutputPopoverActive = presented
+            if !presented {
+                isHoveringPopover = false
+            }
+        }
+        .onDisappear {
+            vm.isMediaOutputPopoverActive = false
         }
     }
 }
+
+// MARK: - Media Output Selector Popover
+
+struct MediaOutputSelectorPopover: View {
+    @ObservedObject var routeManager: AudioRouteManager
+    @ObservedObject var volumeModel: MediaOutputVolumeViewModel
+    var onHoverChanged: (Bool) -> Void
+    var dismiss: () -> Void
+
+    var body: some View {
+        VStack(spacing: 16) {
+            volumeSection
+            Divider()
+            devicesSection
+        }
+        .frame(width: 240)
+        .padding(16)
+        .onHover { onHoverChanged($0) }
+        .onDisappear { onHoverChanged(false) }
+    }
+
+    private var volumeSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 12) {
+                Button {
+                    volumeModel.toggleMute()
+                } label: {
+                    Image(systemName: volumeIconName)
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(.primary)
+                        .frame(width: 28, height: 28)
+                        .background(Circle().fill(Color.secondary.opacity(0.18)))
+                        .contentShape(Circle())
+                }
+                .buttonStyle(.plain)
+
+                Slider(
+                    value: Binding(
+                        get: { Double(volumeModel.level) },
+                        set: { volumeModel.setVolume(Float($0)) }
+                    ),
+                    in: 0...1
+                )
+                .tint(.accentColor)
+            }
+
+            HStack {
+                Text("Output volume")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Spacer()
+                Text(volumePercentage)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+    }
+
+    private var devicesSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Output devices")
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+            if routeManager.devices.isEmpty {
+                Text("No audio outputs available")
+                    .font(.callout)
+                    .foregroundColor(.secondary)
+                    .padding(.vertical, 12)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            } else {
+                ScrollView {
+                    VStack(spacing: 4) {
+                        ForEach(routeManager.devices) { device in
+                            Button {
+                                routeManager.select(device: device)
+                                dismiss()
+                            } label: {
+                                HStack(spacing: 8) {
+                                    Image(systemName: device.iconName)
+                                        .font(.system(size: 14, weight: .medium))
+                                        .frame(width: 20)
+                                    Text(device.name)
+                                        .foregroundColor(.primary)
+                                        .lineLimit(1)
+                                    Spacer()
+                                    if device.id == routeManager.activeDeviceID {
+                                        Image(systemName: "checkmark")
+                                            .font(.system(size: 12, weight: .bold))
+                                            .foregroundColor(.accentColor)
+                                    }
+                                }
+                                .padding(.vertical, 6)
+                                .padding(.horizontal, 8)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                        .fill(device.id == routeManager.activeDeviceID
+                                              ? Color.accentColor.opacity(0.15)
+                                              : Color.clear)
+                                )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .frame(maxHeight: 200)
+            }
+        }
+    }
+
+    private var volumeIconName: String {
+        if volumeModel.isMuted || volumeModel.level <= 0.001 { return "speaker.slash.fill" }
+        else if volumeModel.level < 0.33 { return "speaker.wave.1.fill" }
+        else if volumeModel.level < 0.66 { return "speaker.wave.2.fill" }
+        return "speaker.wave.3.fill"
+    }
+
+    private var volumePercentage: String {
+        "\(Int(round(volumeModel.level * 100)))%"
+    }
+}
+
 
 struct MusicSlotToolbar: View {
     @ObservedObject private var musicManager = MusicManager.shared

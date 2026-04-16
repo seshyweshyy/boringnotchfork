@@ -111,6 +111,8 @@
 		432A89E02F8A7C7500237ABF /* BottomRoundedRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432A89DF2F8A7C7500237ABF /* BottomRoundedRectangle.swift */; };
 		432CB8EF2F8DC2FD00D5FE00 /* LiquidGlassMusicWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432CB8EE2F8DC2FB00D5FE00 /* LiquidGlassMusicWidget.swift */; };
 		432CB8F12F8DCAD900D5FE00 /* LiquidGlassWidgetWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432CB8F02F8DCAD000D5FE00 /* LiquidGlassWidgetWindow.swift */; };
+		43494D4C2F90EF28002CB138 /* AudioRouteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43494D4B2F90EF22002CB138 /* AudioRouteManager.swift */; };
+		43494D4E2F90EF57002CB138 /* MediaOutputVolumeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43494D4D2F90EF56002CB138 /* MediaOutputVolumeViewModel.swift */; };
 		43D122D92F8D0FCE00A145E3 /* LockNotchOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D122D82F8D0FC600A145E3 /* LockNotchOverlay.swift */; };
 		507266DB2C908E2E00A2D00D /* HoverButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507266DA2C908E2E00A2D00D /* HoverButton.swift */; };
 		5917FD112E57891600E87F1C /* MediaKeyInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5917FD102E57891600E87F1C /* MediaKeyInterceptor.swift */; };
@@ -287,6 +289,8 @@
 		432A89DF2F8A7C7500237ABF /* BottomRoundedRectangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomRoundedRectangle.swift; sourceTree = "<group>"; };
 		432CB8EE2F8DC2FB00D5FE00 /* LiquidGlassMusicWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassMusicWidget.swift; sourceTree = "<group>"; };
 		432CB8F02F8DCAD000D5FE00 /* LiquidGlassWidgetWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassWidgetWindow.swift; sourceTree = "<group>"; };
+		43494D4B2F90EF22002CB138 /* AudioRouteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRouteManager.swift; sourceTree = "<group>"; };
+		43494D4D2F90EF56002CB138 /* MediaOutputVolumeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaOutputVolumeViewModel.swift; sourceTree = "<group>"; };
 		43D122D82F8D0FC600A145E3 /* LockNotchOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockNotchOverlay.swift; sourceTree = "<group>"; };
 		507266DA2C908E2E00A2D00D /* HoverButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoverButton.swift; sourceTree = "<group>"; };
 		5917FD102E57891600E87F1C /* MediaKeyInterceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaKeyInterceptor.swift; sourceTree = "<group>"; };
@@ -523,6 +527,7 @@
 		147163B52C5D804B0068B555 /* managers */ = {
 			isa = PBXGroup;
 			children = (
+				43494D4B2F90EF22002CB138 /* AudioRouteManager.swift */,
 				11D58EA12E760AE100FA8377 /* ImageService.swift */,
 				F38DE6472D8243E2008B5C6D /* BatteryActivityManager.swift */,
 				112FB7342CCF16F70015238C /* NotchSpaceManager.swift */,
@@ -639,6 +644,7 @@
 		14D570C72C5F38760011E668 /* models */ = {
 			isa = PBXGroup;
 			children = (
+				43494D4D2F90EF56002CB138 /* MediaOutputVolumeViewModel.swift */,
 				11F748812ECB07A400F841DB /* MusicControlButton.swift */,
 				118D1FD02E98FF5F00A2FF63 /* SharingStateManager.swift */,
 				1163988E2DF5CC870052E6AF /* CalendarModel.swift */,
@@ -975,6 +981,7 @@
 				B1B112932C6A577E00093D8F /* MouseTracker.swift in Sources */,
 				43D122D92F8D0FCE00A145E3 /* LockNotchOverlay.swift in Sources */,
 				B1C448962C9712C4001F0858 /* ActionBar.swift in Sources */,
+				43494D4E2F90EF57002CB138 /* MediaOutputVolumeViewModel.swift in Sources */,
 				118EBE312E9717DB00D54B5A /* URL+SecurityScoped.swift in Sources */,
 				1132E5162E777C140068732D /* YouTubeMusicAuthentication.swift in Sources */,
 				14A7E5882C64A89C008C1BE9 /* HelloAnimation.swift in Sources */,
@@ -1011,6 +1018,7 @@
 				1132E5142E777B920068732D /* YouTubeMusicNetworking.swift in Sources */,
 				1132E5122E777B6E0068732D /* YouTubeMusicModels.swift in Sources */,
 				11CFC65F2E097F2F00748C80 /* OnboardingView.swift in Sources */,
+				43494D4C2F90EF28002CB138 /* AudioRouteManager.swift in Sources */,
 				14CEF4162C5CAED300855D72 /* KnotchApp.swift in Sources */,
 				B17266DF2C64DFA00031BA0D /* BundleInfos.swift in Sources */,
 				118EBE3B2E9720C500D54B5A /* ShelfStateViewModel.swift in Sources */,
