@@ -103,11 +103,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func onScreenLocked(_ notification: Notification) {
         isScreenLocked = true
         broadcastLockState(true)
-        if !Defaults[.showOnLockScreen] {
-            cleanupWindows()
-        } else {
-            enableSkyLightOnAllWindows()
-        }
+        enableSkyLightOnAllWindows()
         showLiquidGlassWidgetIfNeeded()
     }
 
@@ -115,10 +111,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func onScreenUnlocked(_ notification: Notification) {
         isScreenLocked = false
         broadcastLockState(false)
-        if !Defaults[.showOnLockScreen] {
-            adjustWindowPosition(changeAlpha: true)
-        } else {
+        if Defaults[.showOnLockScreen] {
             disableSkyLightOnAllWindows()
+        } else {
+            cleanupWindows()
+            adjustWindowPosition(changeAlpha: true)
         }
         LiquidGlassWidgetWindowController.shared.hide()
         AlbumArtBackgroundWindowController.shared.hide()
