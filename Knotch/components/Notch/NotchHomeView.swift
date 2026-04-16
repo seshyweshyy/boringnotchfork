@@ -423,6 +423,78 @@ struct AudioOutputButton: View {
     }
 }
 
+// MARK: - Lock Screen Audio Output Button (inline volume toggle, no popover)
+
+struct LockScreenAudioOutputButton: View {
+    @ObservedObject private var routeManager = AudioRouteManager.shared
+    @Binding var isVolumeVisible: Bool
+
+    private var buttonIcon: String {
+        routeManager.activeDevice?.iconName ?? "speaker.wave.2"
+    }
+
+    var body: some View {
+        HoverButton(icon: buttonIcon, scale: .medium) {
+            withAnimation(.easeInOut(duration: 0.22)) {
+                isVolumeVisible.toggle()
+            }
+        }
+        .onAppear {
+            routeManager.refreshDevices()
+        }
+    }
+}
+
+// MARK: - Lock Screen Volume Slider
+
+struct LockScreenVolumeSlider: View {
+    @StateObject private var volumeModel = MediaOutputVolumeViewModel()
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Button {
+                volumeModel.toggleMute()
+            } label: {
+                Image(systemName: volumeIconName)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.white.opacity(0.8))
+                    .frame(width: 22)
+            }
+            .buttonStyle(.plain)
+
+            Slider(
+                value: Binding(
+                    get: { Double(volumeModel.level) },
+                    set: { volumeModel.setVolume(Float($0)) }
+                ),
+                in: 0...1
+            )
+            .tint(.white)
+
+            Text(volumePercentage)
+                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                .foregroundColor(.white.opacity(0.7))
+                .frame(width: 36, alignment: .trailing)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color.white.opacity(0.1))
+        )
+    }
+
+    private var volumeIconName: String {
+        if volumeModel.isMuted || volumeModel.level <= 0.001 { return "speaker.slash.fill" }
+        else if volumeModel.level < 0.33 { return "speaker.wave.1.fill" }
+        else if volumeModel.level < 0.66 { return "speaker.wave.2.fill" }
+        return "speaker.wave.3.fill"
+    }
+
+    private var volumePercentage: String {
+        "\(Int(round(volumeModel.level * 100)))%"
+    }
+}
 // MARK: - Media Output Selector Popover
 
 struct MediaOutputSelectorPopover: View {
@@ -551,6 +623,9 @@ struct MusicSlotToolbar: View {
     @ObservedObject private var musicManager = MusicManager.shared
     @Default(.musicControlSlots) private var slotConfig
 
+    // When non-nil, the audio output button operates in lock-screen mode — toggling an inline volume slider instead of opening a popover.
+    var lockScreenVolumeVisible: Binding<Bool>? = nil
+
     var body: some View {
         HStack(spacing: 4) {
             Spacer()
@@ -602,7 +677,11 @@ struct MusicSlotToolbar: View {
                 MusicManager.shared.skip(seconds: 15)
             }
         case .audioOutput:
-            AudioOutputButton()
+            if let binding = lockScreenVolumeVisible {
+                LockScreenAudioOutputButton(isVolumeVisible: binding)
+            } else {
+                AudioOutputButton()
+            }
         case .none:
             Color.clear.frame(width: 40, height: 1)
         }

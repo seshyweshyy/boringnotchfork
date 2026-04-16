@@ -29,6 +29,7 @@ struct LiquidGlassMusicWidget: View {
     @State private var sliderValue: Double = 0
     @State private var dragging: Bool = false
     @State private var lastDragged: Date = .distantPast
+    @State private var showLockScreenVolume: Bool = false
 
     var body: some View {
         GlassEffectContainer {
@@ -104,10 +105,18 @@ struct LiquidGlassMusicWidget: View {
                 .padding(.top, 4)
                 
                 // ── Transport controls ────────────────────────────────────────
-                MusicSlotToolbar()
+                MusicSlotToolbar(lockScreenVolumeVisible: $showLockScreenVolume)
                     .padding(.bottom, 8)
+
+                if showLockScreenVolume {
+                    LockScreenVolumeSlider()
+                        .padding(.horizontal, 14)
+                        .padding(.bottom, 10)
+                        .transition(.scale(scale: 0.97, anchor: .top).combined(with: .opacity))
+                }
             }
             .frame(width: 320)
+            .animation(.easeInOut(duration: 0.22), value: showLockScreenVolume)
             .glassEffect(isExpanded ? .regular : (widgetStyle == .tinted ? .regular : .clear), in: .rect(cornerRadius: 22))
             .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
             .overlay(
