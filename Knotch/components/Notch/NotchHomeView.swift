@@ -254,7 +254,7 @@ struct MusicControlsView: View {
         case .off:
             return .primary
         case .all, .one:
-            return .effectiveAccent
+            return Color(nsColor: musicManager.avgColor)
         }
     }
 }
@@ -275,7 +275,7 @@ struct FavoriteControlButton: View {
     }
 
     private var iconColor: Color {
-        musicManager.isFavoriteTrack ? .effectiveAccent : .primary
+        musicManager.isFavoriteTrack ? Color(nsColor: musicManager.avgColor) : .primary
     }
 }
 
@@ -645,7 +645,7 @@ struct MusicSlotToolbar: View {
     private func slotView(for slot: MusicControlButton) -> some View {
         switch slot {
         case .shuffle:
-            HoverButton(icon: "shuffle", iconColor: musicManager.isShuffled ? .effectiveAccent : .primary, scale: .medium) {
+            HoverButton(icon: "shuffle", iconColor: musicManager.isShuffled ? Color(nsColor: musicManager.avgColor) : .primary, scale: .medium) {
                 MusicManager.shared.toggleShuffle()
             }
         case .previous:
@@ -695,7 +695,8 @@ struct MusicSlotToolbar: View {
     }
 
     private var repeatIconColor: Color {
-        musicManager.repeatMode == .off ? .primary : .effectiveAccent
+        musicManager.repeatMode == .off ?
+        .primary : Color(nsColor: musicManager.avgColor)
     }
 }
 // MARK: - Main View
