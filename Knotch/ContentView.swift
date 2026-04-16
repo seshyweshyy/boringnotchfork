@@ -167,7 +167,7 @@ struct ContentView: View {
 
     @State private var haptics: Bool = false
     
-    @StateObject private var lockIconAnimator = LockIconAnimator(initiallyLocked: false)
+    @State private var isUnlockAnimating: Bool = false
 
     @Namespace var albumArtNamespace
 
@@ -205,7 +205,7 @@ struct ContentView: View {
             && vm.notchState == .closed && Defaults[.showPowerStatusNotifications]
         {
             chinWidth = 640
-        } else if vm.notchState == .closed && (vm.isScreenLocked || lockIconAnimator.progress > 0.01) {
+        } else if vm.notchState == .closed && (vm.isScreenLocked || isUnlockAnimating) {
             chinWidth += 60
         } else if (!coordinator.expandingView.show || coordinator.expandingView.type == .music)
             && vm.notchState == .closed && (musicManager.isPlaying || !musicManager.isPlayerIdle)
@@ -341,10 +341,14 @@ struct ContentView: View {
                         }
                     }
                     .onChange(of: vm.isScreenLocked) { _, newLocked in
-                        lockIconAnimator.update(isLocked: newLocked)
-                    }
-                    .onAppear {
-                        lockIconAnimator.update(isLocked: vm.isScreenLocked, animated: false)
+                        if !newLocked {
+                            isUnlockAnimating = true
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.55) {
+                                withAnimation(.spring(response: 0.40, dampingFraction: 0.80)) {
+                                    isUnlockAnimating = false
+                                }
+                            }
+                        }
                     }
                     .sensoryFeedback(.alignment, trigger: haptics)
                     .contextMenu {
@@ -427,9 +431,9 @@ struct ContentView: View {
                     Spacer()
                 } else {
                     // Locked state — show lock icon first, before any other content
-                    if vm.isScreenLocked || lockIconAnimator.progress > 0.01 {
+                    if vm.isScreenLocked || isUnlockAnimating {
                         HStack(spacing: 0) {
-                            LockNotchOverlay(animator: lockIconAnimator)
+                            LockNotchOverlay(isLocked: vm.isScreenLocked, isUnlockAnimating: $isUnlockAnimating)
                                 .allowsHitTesting(false)
                                 .padding(.leading, cornerRadiusInsets.closed.bottom - 10)
                             Spacer()
