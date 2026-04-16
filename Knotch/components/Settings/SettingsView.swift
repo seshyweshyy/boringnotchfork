@@ -607,7 +607,6 @@ struct Media: View {
     @Default(.enableSneakPeek) private var enableSneakPeek
     @Default(.sneakPeekStyles) var sneakPeekStyles
     @Default(.lockScreenWidgetStyle) var lockScreenWidgetStyle
-    @Default(.lockScreenClockStyle) var lockScreenClockStyle
 
     @Default(.enableLyrics) var enableLyrics
 
@@ -697,10 +696,8 @@ struct Media: View {
                     }
                 }
                 .disabled(!Defaults[.lockScreenMusicWidget])
-                Picker("Expanded clock style", selection: $lockScreenClockStyle) {
-                    ForEach(LockScreenClockStyle.allCases) { style in
-                        Text(style.rawValue).tag(style)
-                    }
+                Defaults.Toggle(key: .lockScreenShowClock) {
+                    Text("Show date and time when album art expanded")
                 }
                 .disabled(!Defaults[.lockScreenMusicWidget])
             } header: {

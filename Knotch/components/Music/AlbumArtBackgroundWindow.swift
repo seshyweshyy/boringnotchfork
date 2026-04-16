@@ -29,15 +29,7 @@ class AlbumArtBackgroundWindow: BoringNotchSkyLightWindow {
 }
 
 // MARK: - Background View
-
-enum LockScreenClockStyle: String, CaseIterable, Identifiable, Defaults.Serializable {
-    case solid = "Solid"
-    case liquidGlass = "Glass"
-    var id: String { rawValue }
-}
-
 private struct LockScreenClockView: View {
-    let style: LockScreenClockStyle
 
     @State private var now = Date()
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -64,19 +56,12 @@ private struct LockScreenClockView: View {
         VStack(spacing: -10) {
             Text(dateString)
                 .font(.system(size: 22, weight: .semibold, design: .rounded))
-                .foregroundStyle(style == .solid ? .white : .white.opacity(0.85))
+                .foregroundStyle(.white)
 
             Text(timeString)
                 .font(.system(size: 120, weight: .bold, design: .default))
-                .foregroundStyle(
-                    style == .solid
-                        ? AnyShapeStyle(.white)
-                        : AnyShapeStyle(.ultraThinMaterial)
-                )
-                .shadow(
-                    color: style == .solid ? .black.opacity(0.2) : .clear,
-                    radius: 6, x: 0, y: 2
-                )
+                .foregroundStyle(.white)
+                .shadow(color: .black.opacity(0.2), radius: 6, x: 0, y: 2)
         }
         .onReceive(timer) { now = $0 }
     }
@@ -85,7 +70,7 @@ private struct LockScreenClockView: View {
 private struct AlbumArtBackgroundView: View {
     @ObservedObject var musicManager = MusicManager.shared
     @State private var colors: [Color] = [.black, .gray, .black]
-    @Default(.lockScreenClockStyle) var clockStyle
+    @Default(.lockScreenShowClock) var showClock
 
     var body: some View {
         GeometryReader { geo in
@@ -109,13 +94,15 @@ private struct AlbumArtBackgroundView: View {
                         endRadius: 400
                     )
                 )
-                // Fake lock screen clock — sits in upper-centre, above the gradient
-                VStack {
-                    Spacer().frame(height: geo.size.height * 0.08)
-                    LockScreenClockView(style: clockStyle)
-                    Spacer()
+                if showClock {
+                    // Fake lock screen clock — sits in upper-centre, above the gradient
+                    VStack {
+                        Spacer().frame(height: geo.size.height * 0.08)
+                        LockScreenClockView()
+                        Spacer()
+                    }
+                    .frame(maxWidth: .infinity)
                 }
-                .frame(maxWidth: .infinity)
             }
         }
         .onChange(of: musicManager.artFlipSignal) { _, signal in
