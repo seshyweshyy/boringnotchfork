@@ -52,7 +52,7 @@ private struct LottieAnimationViewRepresentable: NSViewRepresentable {
         let view = LottieAnimationView(name: "lock-unlock")
         view.contentMode = .scaleAspectFit
         view.loopMode = .playOnce
-        view.animationSpeed = 1.4
+        view.animationSpeed = 1.8
         view.wantsLayer = true
         view.layer?.masksToBounds = false
         view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
