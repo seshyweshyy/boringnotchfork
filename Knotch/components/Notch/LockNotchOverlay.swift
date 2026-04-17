@@ -24,8 +24,8 @@ struct LockNotchOverlay: View {
                         isUnlockAnimating = false
                     }
                 }
-                .frame(width: 32, height: 18)
-                .offset(x: -8)
+                .frame(width: 20, height: 20)
+                .offset(x: -6)
                     .transition(
                         .asymmetric(
                             insertion: .scale(scale: 0.7).combined(with: .opacity),
@@ -61,7 +61,7 @@ private struct LottieAnimationViewRepresentable: NSViewRepresentable {
     }
 
     func updateNSView(_ nsView: LottieAnimationView, context: Context) {
-        nsView.frame = CGRect(origin: .zero, size: CGSize(width: 32, height: 18))
+        nsView.frame = CGRect(origin: .zero, size: CGSize(width: 20, height: 20))
         if playForward {
             nsView.play(fromFrame: 0, toFrame: 90, loopMode: .playOnce) { finished in
                 if finished { onComplete?() }

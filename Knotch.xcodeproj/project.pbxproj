@@ -566,7 +566,6 @@
 				11F748502EC9AABA00F841DB /* BoringNotchXPCHelper */,
 				14CEF4132C5CAED300855D72 /* Products */,
 				14D031EC2C689DB70096E6A1 /* Frameworks */,
-				431EB9F82F91B17E0075616F /* lock-unlock.json */,
 			);
 			sourceTree = "<group>";
 		};
@@ -605,6 +604,7 @@
 				14CEF41B2C5CAED400855D72 /* Preview Content */,
 				112FB72F2CCF12CC0015238C /* private */,
 				11CC44A12CEE614100C7244B /* BoringViewCoordinator.swift */,
+				431EB9F82F91B17E0075616F /* lock-unlock.json */,
 			);
 			path = Knotch;
 			sourceTree = "<group>";
