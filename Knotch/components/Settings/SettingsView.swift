@@ -337,7 +337,7 @@ struct SettingsView: View {
             SettingsSearchEntry(tabID: "Media", title: "Full screen behavior", keywords: ["full screen", "hide", "behavior"], highlightID: "Media-Full screen behavior"),
             SettingsSearchEntry(tabID: "Media", title: "Show music widget on lock screen", keywords: ["lock screen", "music", "widget"], highlightID: "Media-Show album art"),
             SettingsSearchEntry(tabID: "Media", title: "Widget glass style", keywords: ["glass", "widget", "style", "tinted"], highlightID: "Media-Widget glass style"),
-            SettingsSearchEntry(tabID: "Media", title: "Show date and time when album art expanded", keywords: ["clock", "date", "time", "album"], highlightID: "Media-Show date and time"),
+            SettingsSearchEntry(tabID: "Media", title: "Enable expanded album art", keywords: ["expanded", "album", "art", "lock screen", "background"], highlightID: "Media-Expanded album art"),
             SettingsSearchEntry(tabID: "Media", title: "Show lyrics below artist name", keywords: ["lyrics", "artist"], highlightID: "Media-Show lyrics"),
             // Calendar
             SettingsSearchEntry(tabID: "Calendar", title: "Show calendar", keywords: ["calendar", "notch"], highlightID: "Calendar-Show calendar in notch"),
@@ -1003,17 +1003,18 @@ struct Media: View {
                 }
                 .disabled(!Defaults[.lockScreenMusicWidget])
                 .settingsHighlight(id: "Media-Widget glass style")
-                Defaults.Toggle(key: .lockScreenShowClock) {
-                    Text("Show date and time when album art expanded")
+                Defaults.Toggle(key: .lockScreenExpandedAlbumArt) {
+                    HStack {
+                        Text("Enable expanded album art")
+                        customBadge(text: "Beta")
+                    }
                 }
                 .disabled(!Defaults[.lockScreenMusicWidget])
-                .settingsHighlight(id: "Media-Show date and time")
+                .settingsHighlight(id: "Media-Expanded album art")
             } header: {
                 Text("Lock screen")
             } footer: {
                 Text("Tinted adds a dark tint to the frosted glass.")
-                    .foregroundStyle(.secondary)
-                    .font(.caption)
             }
 
             Section {

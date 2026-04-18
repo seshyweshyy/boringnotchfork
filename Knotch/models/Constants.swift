@@ -144,7 +144,7 @@ extension Defaults.Keys {
     )
     static let lockScreenMusicWidget = Key<Bool>("lockScreenMusicWidget", default: true)
     static let lockScreenWidgetStyle = Key<LockScreenWidgetStyle>("lockScreenWidgetStyle", default: .frosted)
-    static let lockScreenShowClock = Key<Bool>("lockScreenShowClock", default: true)
+    static let lockScreenExpandedAlbumArt = Key<Bool>("lockScreenExpandedAlbumArt", default: true)
     
     // MARK: Battery
     static let showPowerStatusNotifications = Key<Bool>("showPowerStatusNotifications", default: true)

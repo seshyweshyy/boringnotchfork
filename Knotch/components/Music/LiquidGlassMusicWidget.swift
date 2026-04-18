@@ -20,6 +20,7 @@ struct LiquidGlassMusicWidget: View {
     @ObservedObject var musicManager = MusicManager.shared
     @Default(.playerColorTinting) var playerColorTinting
     @Default(.lockScreenWidgetStyle) var widgetStyle
+    @Default(.lockScreenExpandedAlbumArt) var expandedAlbumArtEnabled
 
     @Binding var isExpanded: Bool
     var artNamespace: Namespace.ID
@@ -166,6 +167,7 @@ struct LiquidGlassMusicWidget: View {
 
     private var albumArtThumbnail: some View {
         Button {
+            guard expandedAlbumArtEnabled else { return }
             withAnimation(.spring(response: 0.4, dampingFraction: 0.82)) {
                 isExpanded = true
             }

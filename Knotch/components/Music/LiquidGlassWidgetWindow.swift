@@ -59,7 +59,7 @@ private struct LiquidGlassWidgetRoot: View {
                         )
                     )
                     .allowsHitTesting(true)
-                Spacer().frame(height: isExpanded ? 140 : 210)
+                Spacer().frame(height: isExpanded ? 115 : 210)
             }
             .frame(width: geo.size.width)
 
@@ -71,7 +71,7 @@ private struct LiquidGlassWidgetRoot: View {
                     .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
                     .shadow(color: .black.opacity(0.6), radius: 60, x: 0, y: 20)
                     .shadow(color: .black.opacity(0.3), radius: 20, x: 0, y: 10)
-                    .position(x: geo.size.width / 2, y: geo.size.height * 0.47)
+                    .position(x: geo.size.width / 2, y: geo.size.height * 0.5)
                     .allowsHitTesting(true)
                     .transition(.scale(scale: 0.85).combined(with: .opacity))
             }
@@ -92,7 +92,9 @@ private struct LiquidGlassWidgetRoot: View {
             ) { _ in
                 if isExpanded {
                     isExpanded = false
-                    AlbumArtBackgroundWindowController.shared.hide()
+                    // AlbumArtBackgroundWindowController is handled by KnotchApp.onScreenUnlocked
+                    // via hideForUnlock(). The onChange(isExpanded: false) below will call hide()
+                    // as a no-op safety net — that's fine. Don't call it explicitly here too.
                     NotificationCenter.default.post(name: .lockScreenProfileShouldShow, object: nil)
                 }
             }
