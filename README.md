@@ -44,8 +44,9 @@
 - Configurable drag detection area, copy-on-drag, and auto-remove after sharing
 
 **Lock Screen**
+- Screen lock icon and notch lock protection
 - Music widget displayed over the lock screen with selectable glass style
-- Lock screen clock overlay
+- Expanded album art background
 
 **Customization**
 - Notch size modes: match real notch, match menu bar, or fully custom
@@ -58,7 +59,7 @@
 
 ## System Requirements
 
-- macOS **14 Sonoma** or later
+- macOS **14 Sonoma** or later (may require macOS **26** for Liquid Glass features)
 - Apple Silicon or Intel Mac
 
 ---
@@ -67,14 +68,14 @@
 
 ### Option 1: Download Manually
 
-<a href="https://github.com/TheBoredTeam/boring.notch/releases/latest/download/boringNotch.dmg"><img width="200" src="https://github.com/user-attachments/assets/e3179be1-8416-4b8a-b417-743e1ecc67d6" alt="Download for macOS" /></a>
+<a href="https://github.com/TheBoredTeam/boring.notch/releases/latest/download/Knotch.dmg"><img width="200" src="https://github.com/user-attachments/assets/e3179be1-8416-4b8a-b417-743e1ecc67d6" alt="Download for macOS" /></a>
 
 Open the `.dmg` and move **Knotch** to your `/Applications` folder.
 
 > [!IMPORTANT]
 > Knotch is not yet notarized. macOS will block it on first launch. Run this once to clear the quarantine flag, then open normally:
 > ```bash
-> xattr -dr com.apple.quarantine /Applications/boringNotch.app
+> xattr -dr com.apple.quarantine /Applications/Knotch.app
 > ```
 > Alternatively: open the app, dismiss the warning, then go to **System Settings → Privacy & Security** and click **Open Anyway**. (This method doesn't work for all users.)
 
@@ -94,7 +95,7 @@ Homebrew handles the quarantine bypass automatically.
 ```bash
 git clone https://github.com/TheBoredTeam/boring.notch.git
 cd boring.notch
-open boringNotch.xcodeproj
+open Knotch.xcodeproj
 ```
 
 Then press `Cmd + R` to build and run.
@@ -121,35 +122,11 @@ Then press `Cmd + R` to build and run.
 
 ---
 
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for how to get involved.
-
-## Join the Discord
-
-<a href="https://discord.gg/GvYcYpAKTu"><img src="https://iili.io/28m3GHv.png" alt="Join The Boring Server!" style="height: 60px !important;width: 217px !important;" /></a>
-
-## Support
-
-<a href="https://www.ko-fi.com/alexander5015"><img src="https://github.com/user-attachments/assets//a76175ef-7e93-475a-8b67-4922ba5964c2" alt="Support on Ko-fi" style="height: 70px !important;width: 346px !important;" /></a>
-
-## Star History
-
-<a href="https://www.star-history.com/#TheBoredTeam/boring.notch&Timeline">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=TheBoredTeam/boring.notch&type=Timeline&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=TheBoredTeam/boring.notch&type=Timeline" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=TheBoredTeam/boring.notch&type=Timeline" />
-  </picture>
-</a>
-
----
-
 ## Acknowledgments
 
 - **[MediaRemoteAdapter](https://github.com/ungive/mediaremote-adapter)** — enabled Now Playing support on macOS 15.4+
 - **[NotchDrop](https://github.com/Lakr233/NotchDrop)** — foundation for the Shelf feature
 - Icon design: [@maxtron95](https://github.com/maxtron95)
-- Website: [@himanshhhhuv](https://github.com/himanshhhhuv)
+- Website: [@seshyweshyy](https://github.com/seshyweshyy)
 
 For full third-party licenses see [THIRD_PARTY_LICENSES.md](./THIRD_PARTY_LICENSES.md).
