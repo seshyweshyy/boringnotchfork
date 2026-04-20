@@ -1,6 +1,6 @@
 //
 //  AlbumArtBackgroundWindow.swift
-//  boringNotch
+//  Knotch
 //
 
 import AppKit
@@ -149,7 +149,6 @@ class AlbumArtBackgroundWindowController {
     private func loadLUIClockControllers() {
         let bundleURL = URL(fileURLWithPath: "/System/Library/CoreServices/SecurityAgentPlugins/loginwindow.bundle")
         guard let bundle = Bundle(url: bundleURL), bundle.load() else {
-            print("AlbumArtBackground: Failed to load loginwindow.bundle")
             return
         }
         
@@ -163,21 +162,6 @@ class AlbumArtBackgroundWindowController {
             let vc = cls.init() as? NSViewController
             vc?.perform(NSSelectorFromString("viewDidLoad"))
             dateVC = vc
-        }
-        
-        if let cls = NSClassFromString("LUI2StatusViewController") as? NSObject.Type {
-            let vc = cls.init() as? NSViewController
-            vc?.perform(NSSelectorFromString("viewDidLoad"))
-            // dump its methods
-            var methodCount: UInt32 = 0
-            let methods = class_copyMethodList(cls, &methodCount)
-            for i in 0..<Int(methodCount) {
-                if let method = methods?[i] {
-                    print("LUI2StatusViewController method: \(NSStringFromSelector(method_getName(method)))")
-                }
-            }
-            free(methods)
-            print("LUI2StatusViewController view: \(String(describing: vc?.view))")
         }
         
         if let cls = NSClassFromString("LUI2StatusViewController") as? NSObject.Type {
@@ -321,7 +305,6 @@ class AlbumArtBackgroundWindowController {
 
     func show() {
         guard let bgWin = backgroundWindow, let clkWin = clockWindow else { return }
-        print("AlbumArtBackground: show() called — backgroundWindow=\(String(describing: backgroundWindow)) clockWindow=\(String(describing: clockWindow))")
         
         let handler = dlopen("/System/Library/PrivateFrameworks/SkyLight.framework/Versions/A/SkyLight", RTLD_NOW)
         let SLSMainConnectionID = unsafeBitCast(dlsym(handler, "SLSMainConnectionID"), to: F_SLSMainConnectionID.self)
