@@ -78,6 +78,24 @@ private struct SettingsSidebarIcon: View {
     }
 }
 
+private struct SettingsDetailHeader: View {
+    let tab: SettingsTabItem
+
+    var body: some View {
+        HStack(spacing: 10) {
+            SettingsSidebarIcon(tab: tab)
+                .scaleEffect(1.15)
+            Text(tab.title)
+                .font(.title2)
+                .fontWeight(.bold)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 20)
+        .padding(.top, 16)
+        .padding(.bottom, 4)
+    }
+}
+
 // MARK: - Search Entry Model
 
 private struct SettingsSearchEntry: Identifiable {
@@ -136,7 +154,7 @@ private struct SettingsSidebarSearchBar: View {
             .padding(.vertical, 8)
             .background(
                 RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(Color(nsColor: .controlBackgroundColor))
+                    .fill(Color(nsColor: .controlBackgroundColor).opacity(0.4))
                     .shadow(color: .black.opacity(0.08), radius: 1.5, x: 0, y: 1)
             )
             .animation(.easeInOut(duration: 0.15), value: text.isEmpty)
@@ -424,7 +442,8 @@ struct SettingsView: View {
     }
 
     var body: some View {
-        NavigationSplitView {
+        HStack(spacing: 0) {
+            // MARK: Sidebar
             VStack(spacing: 0) {
                 SettingsSidebarSearchBar(
                     text: $searchText,
@@ -439,83 +458,102 @@ struct SettingsView: View {
                 Divider()
                     .padding(.horizontal, 12)
 
-                List(selection: $selectedTab) {
-                    ForEach(groupedTabs, id: \.header) { section in
-                        Section {
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 2) {
+                        ForEach(groupedTabs, id: \.header) { section in
+                            if let header = section.header {
+                                Text(header)
+                                    .font(.caption)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(.secondary)
+                                    .padding(.horizontal, 16)
+                                    .padding(.top, 12)
+                                    .padding(.bottom, 2)
+                            }
                             ForEach(section.tabs) { tab in
-                                NavigationLink(value: tab.id) {
+                                Button {
+                                    selectedTab = tab.id
+                                } label: {
                                     HStack(spacing: 10) {
                                         SettingsSidebarIcon(tab: tab)
                                         Text(tab.title)
+                                            .font(.system(size: 13, weight: .medium))
+                                            .foregroundStyle(.primary)
+                                        Spacer()
                                     }
-                                    .padding(.vertical, 2)
+                                    .padding(.horizontal, 14)
+                                    .padding(.vertical, 6)
+                                    .frame(maxWidth: .infinity)
+                                    .contentShape(Rectangle())
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                            .fill(selectedTab == tab.id ? Color.effectiveAccent : Color.clear)
+                                            .padding(.horizontal, 4)
+                                    )
                                 }
-                            }
-                        } header: {
-                            if let header = section.header {
-                                Text(header)
+                                .buttonStyle(.plain)
+                                .padding(.horizontal, 4)
                             }
                         }
                     }
+                    .padding(.vertical, 4)
                 }
-                .listStyle(SidebarListStyle())
-                .tint(.effectiveAccent)
             }
-            .toolbar(removing: .sidebarToggle)
-            .navigationSplitViewColumnWidth(210)
-        } detail: {
-            Group {
-                switch selectedTab {
-                case "General":
-                    GeneralSettings()
-                case "Appearance":
-                    Appearance()
-                case "Widgets":
-                    Widgets()
-                case "Media":
-                    Media()
-                case "Calendar":
-                    CalendarSettings()
-                case "HUD":
-                    HUD()
-                case "Battery":
-                    Charge()
-                case "Shelf":
-                    Shelf()
-                case "Shortcuts":
-                    Shortcuts()
-                case "Extensions":
-                    GeneralSettings()
-                case "Advanced":
-                    Advanced()
-                case "About":
-                    if let controller = updaterController {
-                        About(updaterController: controller)
-                    } else {
-                        About(
-                            updaterController: SPUStandardUpdaterController(
-                                startingUpdater: false, updaterDelegate: nil,
-                                userDriverDelegate: nil))
-                    }
-                default:
-                    GeneralSettings()
+            .frame(width: 210)
+            .padding(.vertical, 10)
+
+            Divider()
+
+            // MARK: Detail
+            VStack(spacing: 0) {
+                if let tab = knotchTabs.first(where: { $0.id == selectedTab }) {
+                    SettingsDetailHeader(tab: tab)
                 }
+                Group {
+                    switch selectedTab {
+                    case "General":
+                        GeneralSettings()
+                    case "Appearance":
+                        Appearance()
+                    case "Widgets":
+                        Widgets()
+                    case "Media":
+                        Media()
+                    case "Calendar":
+                        CalendarSettings()
+                    case "HUD":
+                        HUD()
+                    case "Battery":
+                        Charge()
+                    case "Shelf":
+                        Shelf()
+                    case "Shortcuts":
+                        Shortcuts()
+                    case "Extensions":
+                        GeneralSettings()
+                    case "Advanced":
+                        Advanced()
+                    case "About":
+                        if let controller = updaterController {
+                            About(updaterController: controller)
+                        } else {
+                            About(
+                                updaterController: SPUStandardUpdaterController(
+                                    startingUpdater: false, updaterDelegate: nil,
+                                    userDriverDelegate: nil))
+                        }
+                    default:
+                        GeneralSettings()
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .environmentObject(highlightCoordinator)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .environmentObject(highlightCoordinator)
         }
-        .navigationSplitViewStyle(.balanced)
-        .toolbar(removing: .sidebarToggle)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                Text("")
-                    .frame(width: 0, height: 0)
-                    .accessibilityHidden(true)
-            }
-        }
+        .frame(width: 700, height: 620)
+        .background(Color.clear)
         .formStyle(.grouped)
-        .frame(width: 700)
-        .background(Color(NSColor.windowBackgroundColor))
         .tint(.effectiveAccent)
         .id(accentColorUpdateTrigger)
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("AccentColorChanged"))) { _ in
@@ -523,6 +561,7 @@ struct SettingsView: View {
         }
     }
 }
+
 
 // MARK: - GeneralSettings
 
@@ -651,7 +690,6 @@ struct GeneralSettings: View {
             .controlSize(.extraLarge)
         }
         .accentColor(.effectiveAccent)
-        .navigationTitle("General")
         .onChange(of: openNotchOnHover) {
             if !openNotchOnHover {
                 enableGestures = true
@@ -775,7 +813,6 @@ struct Charge: View {
             }
         }
         .accentColor(.effectiveAccent)
-        .navigationTitle("Battery")
     }
 }
 
@@ -891,7 +928,6 @@ struct HUD: View {
             .disabled(!Defaults[.hudReplacement])
         }
         .accentColor(.effectiveAccent)
-        .navigationTitle("HUDs")
         .task {
             accessibilityAuthorized = await XPCHelperClient.shared.isAccessibilityAuthorized()
         }
@@ -1025,7 +1061,6 @@ struct Media: View {
             }
         }
         .accentColor(.effectiveAccent)
-        .navigationTitle("Media")
     }
 
     private var availableMediaControllers: [MediaControllerType] {
@@ -1130,7 +1165,6 @@ struct CalendarSettings: View {
             }
         }
         .accentColor(.effectiveAccent)
-        .navigationTitle("Calendar")
         .onAppear {
             Task {
                 await calendarManager.checkCalendarAuthorization()
@@ -1343,7 +1377,6 @@ struct Appearance: View {
             }
         }
         .accentColor(.effectiveAccent)
-        .navigationTitle("Appearance")
     }
 
     func checkVideoInput() -> Bool {
@@ -1425,7 +1458,6 @@ struct Widgets: View {
             }
         }
         .accentColor(.effectiveAccent)
-        .navigationTitle("Widgets")
     }
 }
 
@@ -1613,7 +1645,6 @@ struct Advanced: View {
             }
         }
         .accentColor(.effectiveAccent)
-        .navigationTitle("Advanced")
         .onAppear { loadCustomColor() }
     }
 
@@ -1684,7 +1715,6 @@ struct Shortcuts: View {
             }
         }
         .accentColor(.effectiveAccent)
-        .navigationTitle("Shortcuts")
     }
 }
 
@@ -1777,7 +1807,6 @@ struct Shelf: View {
             }
         }
         .accentColor(.effectiveAccent)
-        .navigationTitle("Shelf")
     }
 }
 
@@ -1831,7 +1860,7 @@ struct About: View {
             }
             VStack(spacing: 0) {
                 Divider()
-                Text("Made with 🫶🏻 by not so boring not.people")
+                Text("Made by seshyweshyy")
                     .foregroundStyle(.secondary)
                     .padding(.top, 5)
                     .padding(.bottom, 7)
@@ -1843,7 +1872,6 @@ struct About: View {
         .toolbar {
             CheckForUpdatesView(updater: updaterController.updater)
         }
-        .navigationTitle("About")
     }
 }
 

@@ -21,6 +21,10 @@ class SettingsWindowController: NSWindowController {
             backing: .buffered,
             defer: false
         )
+        window.isOpaque = false
+        window.backgroundColor = .clear
+        window.styleMask.insert(.fullSizeContentView)
+        window.setValue(22, forKey: "cornerRadius")
         
         super.init(window: window)
         
@@ -40,9 +44,11 @@ class SettingsWindowController: NSWindowController {
         guard let window = window else { return }
         
         window.title = "Knotch Settings"
-        window.titlebarAppearsTransparent = false
-        window.titleVisibility = .visible
-        window.toolbarStyle = .unified
+        window.standardWindowButton(.miniaturizeButton)?.isEnabled = false
+        window.standardWindowButton(.zoomButton)?.isEnabled = false
+        window.titlebarAppearsTransparent = true
+        window.titleVisibility = .hidden
+        window.styleMask.insert(.fullSizeContentView)
         window.isMovableByWindowBackground = true
         
         window.collectionBehavior = [.managed, .participatesInCycle, .fullScreenAuxiliary]
@@ -61,9 +67,27 @@ class SettingsWindowController: NSWindowController {
     
     private func loadContentIfNeeded() {
         guard let window = window,
-              !(window.contentView is NSHostingView<SettingsView>) else { return }
-        let settingsView = SettingsView(updaterController: updaterController)
-        window.contentView = NSHostingView(rootView: settingsView)
+              !(window.contentView is NSVisualEffectView) else { return }
+
+        let effectView = NSVisualEffectView()
+        effectView.material = .sidebar
+        effectView.blendingMode = .behindWindow
+        effectView.state = .active
+
+        let hostingView = NSHostingView(rootView: SettingsView(updaterController: updaterController))
+        hostingView.translatesAutoresizingMaskIntoConstraints = false
+        hostingView.wantsLayer = true
+        hostingView.layer?.backgroundColor = .clear
+
+        effectView.addSubview(hostingView)
+        NSLayoutConstraint.activate([
+            hostingView.topAnchor.constraint(equalTo: effectView.topAnchor),
+            hostingView.bottomAnchor.constraint(equalTo: effectView.bottomAnchor),
+            hostingView.leadingAnchor.constraint(equalTo: effectView.leadingAnchor),
+            hostingView.trailingAnchor.constraint(equalTo: effectView.trailingAnchor),
+        ])
+
+        window.contentView = effectView
     }
     
     func showWindow() {
