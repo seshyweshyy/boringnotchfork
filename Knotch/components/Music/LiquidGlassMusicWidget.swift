@@ -50,14 +50,14 @@ struct LiquidGlassMusicWidget: View {
                         )
                         .fontWeight(.semibold)
                         .id("title-\(isExpanded)")
-
+                        
                         MarqueeText(
                             .constant(musicManager.artistName.isEmpty ? "—" : musicManager.artistName),
                             font: .subheadline,
                             nsFont: .subheadline,
                             textColor: playerColorTinting
-                                ? Color(nsColor: musicManager.avgColor).ensureMinimumBrightness(factor: 0.6)
-                                : Color.white.opacity(0.65),
+                            ? Color(nsColor: musicManager.avgColor).ensureMinimumBrightness(factor: 0.6)
+                            : Color.white.opacity(0.65),
                             frameWidth: 180
                         )
                         .id("artist-\(isExpanded)")
@@ -108,7 +108,7 @@ struct LiquidGlassMusicWidget: View {
                 // ── Transport controls ────────────────────────────────────────
                 MusicSlotToolbar(lockScreenVolumeVisible: $showLockScreenVolume)
                     .padding(.bottom, 8)
-
+                
                 if showLockScreenVolume {
                     LockScreenVolumeSlider()
                         .padding(.horizontal, 14)
@@ -118,15 +118,15 @@ struct LiquidGlassMusicWidget: View {
             }
             .frame(width: 320)
             .animation(.easeInOut(duration: 0.22), value: showLockScreenVolume)
-            .glassEffect(isExpanded ? .regular : (widgetStyle == .tinted ? .regular : .clear), in: .rect(cornerRadius: 22))
+            .glassEffect(.regular, in: .rect(cornerRadius: 22))
             .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 22, style: .continuous)
                     .fill(
                         LinearGradient(
                             stops: [
-                                .init(color: .white.opacity(isExpanded ? 0.18 : 0), location: 0),
-                                .init(color: .white.opacity(isExpanded ? 0.06 : 0), location: 0.3),
+                                .init(color: .white.opacity(isExpanded ? 0.18 : 0.10), location: 0),
+                                .init(color: .white.opacity(isExpanded ? 0.06 : 0.03), location: 0.3),
                                 .init(color: .clear, location: 0.6),
                             ],
                             startPoint: .top,
@@ -140,19 +140,37 @@ struct LiquidGlassMusicWidget: View {
                     .strokeBorder(
                         LinearGradient(
                             stops: [
-                                .init(color: .white.opacity(isExpanded ? 0.35 : 0), location: 0),
-                                .init(color: .white.opacity(isExpanded ? 0.08 : 0), location: 0.5),
+                                .init(color: .white.opacity(isExpanded ? 0.55 : 0.22), location: 0),
+                                .init(color: .white.opacity(isExpanded ? 0.15 : 0.05), location: 0.5),
                                 .init(color: .clear, location: 1),
                             ],
                             startPoint: .top,
                             endPoint: .bottom
                         ),
-                        lineWidth: 1
+                        lineWidth: 2
                     )
                     .allowsHitTesting(false)
             )
+            // Outer glow — makes the widget feel lit from outside when expanded
+            .shadow(color: .white.opacity(isExpanded ? 0.12 : 0), radius: 12, x: 0, y: 0)
+            // Bottom edge light — simulates light bouncing off a surface below
+            .overlay(
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .strokeBorder(
+                        LinearGradient(
+                            stops: [
+                                .init(color: .clear, location: 0.5),
+                                .init(color: .white.opacity(isExpanded ? 0.35 : 0), location: 1),
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        ),
+                        lineWidth: 2.5
+                    )
+                    .allowsHitTesting(false)
+            )
+            .shadow(color: .black.opacity(0.22), radius: 30, x: 0, y: 12)
         }
-        .shadow(color: .black.opacity(0.22), radius: 30, x: 0, y: 12)
         // ── Album art flip ────────────────────────────────────────────────
         .onChange(of: musicManager.artFlipSignal) { _, signal in
             let dir: Double = signal.direction == .forward ? 1 : -1

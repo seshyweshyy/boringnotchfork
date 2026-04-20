@@ -472,7 +472,7 @@ struct LockScreenVolumeSlider: View {
             .tint(.white)
 
             Text(volumePercentage)
-                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                .font(.system(size: 11, weight: .medium, design: .rounded))
                 .foregroundColor(.white.opacity(0.7))
                 .frame(width: 36, alignment: .trailing)
         }
@@ -522,7 +522,7 @@ struct MediaOutputSelectorPopover: View {
                     volumeModel.toggleMute()
                 } label: {
                     Image(systemName: volumeIconName)
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(.system(size: 14, weight: .semibold))
                         .foregroundColor(.primary)
                         .frame(width: 28, height: 28)
                         .background(Circle().fill(Color.secondary.opacity(0.18)))

@@ -336,7 +336,6 @@ struct SettingsView: View {
             SettingsSearchEntry(tabID: "Media", title: "Media inactivity timeout", keywords: ["timeout", "inactivity", "media"], highlightID: "Media-Media inactivity timeout"),
             SettingsSearchEntry(tabID: "Media", title: "Full screen behavior", keywords: ["full screen", "hide", "behavior"], highlightID: "Media-Full screen behavior"),
             SettingsSearchEntry(tabID: "Media", title: "Show music widget on lock screen", keywords: ["lock screen", "music", "widget"], highlightID: "Media-Show album art"),
-            SettingsSearchEntry(tabID: "Media", title: "Widget glass style", keywords: ["glass", "widget", "style", "tinted"], highlightID: "Media-Widget glass style"),
             SettingsSearchEntry(tabID: "Media", title: "Enable expanded album art", keywords: ["expanded", "album", "art", "lock screen", "background"], highlightID: "Media-Expanded album art"),
             SettingsSearchEntry(tabID: "Media", title: "Show lyrics below artist name", keywords: ["lyrics", "artist"], highlightID: "Media-Show lyrics"),
             // Calendar
@@ -996,13 +995,6 @@ struct Media: View {
                     Text("Show music widget on lock screen")
                 }
                 .settingsHighlight(id: "Media-Show album art")
-                Picker("Widget glass style", selection: $lockScreenWidgetStyle) {
-                    ForEach(LockScreenWidgetStyle.allCases) { style in
-                        Text(style.rawValue).tag(style)
-                    }
-                }
-                .disabled(!Defaults[.lockScreenMusicWidget])
-                .settingsHighlight(id: "Media-Widget glass style")
                 Defaults.Toggle(key: .lockScreenExpandedAlbumArt) {
                     HStack {
                         Text("Enable expanded album art")
@@ -1013,8 +1005,6 @@ struct Media: View {
                 .settingsHighlight(id: "Media-Expanded album art")
             } header: {
                 Text("Lock screen")
-            } footer: {
-                Text("Tinted adds a dark tint to the frosted glass.")
             }
 
             Section {
