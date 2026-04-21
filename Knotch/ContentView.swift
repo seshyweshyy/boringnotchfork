@@ -649,6 +649,7 @@ struct ContentView: View {
     private func handleDownGesture(translation: CGFloat, phase: NSEvent.Phase) {
 
         if vm.notchState == .open {
+            guard !vm.isHoveringCalendar else { return }
 
             if phase == .began {
                 hasTriggeredSwipe = false

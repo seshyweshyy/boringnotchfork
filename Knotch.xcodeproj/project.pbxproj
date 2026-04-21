@@ -109,6 +109,7 @@
 		43130CB62F8F37EF00BA14A1 /* ExpandedAlbumArtView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43130CB52F8F37EE00BA14A1 /* ExpandedAlbumArtView.swift */; };
 		43130CB82F8F3D7500BA14A1 /* AlbumArtBackgroundWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43130CB72F8F3D7400BA14A1 /* AlbumArtBackgroundWindow.swift */; };
 		431EB9F92F91B17E0075616F /* lock-unlock.json in Resources */ = {isa = PBXBuildFile; fileRef = 431EB9F82F91B17E0075616F /* lock-unlock.json */; };
+		4329964F2F975EB300CBBC90 /* ImageConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4329964E2F975EAF00CBBC90 /* ImageConverter.swift */; };
 		432A89E02F8A7C7500237ABF /* BottomRoundedRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432A89DF2F8A7C7500237ABF /* BottomRoundedRectangle.swift */; };
 		432CB8EF2F8DC2FD00D5FE00 /* LiquidGlassMusicWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432CB8EE2F8DC2FB00D5FE00 /* LiquidGlassMusicWidget.swift */; };
 		432CB8F12F8DCAD900D5FE00 /* LiquidGlassWidgetWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432CB8F02F8DCAD000D5FE00 /* LiquidGlassWidgetWindow.swift */; };
@@ -288,6 +289,7 @@
 		43130CB52F8F37EE00BA14A1 /* ExpandedAlbumArtView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandedAlbumArtView.swift; sourceTree = "<group>"; };
 		43130CB72F8F3D7400BA14A1 /* AlbumArtBackgroundWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumArtBackgroundWindow.swift; sourceTree = "<group>"; };
 		431EB9F82F91B17E0075616F /* lock-unlock.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "lock-unlock.json"; sourceTree = "<group>"; };
+		4329964E2F975EAF00CBBC90 /* ImageConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageConverter.swift; sourceTree = "<group>"; };
 		432A89DF2F8A7C7500237ABF /* BottomRoundedRectangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomRoundedRectangle.swift; sourceTree = "<group>"; };
 		432CB8EE2F8DC2FB00D5FE00 /* LiquidGlassMusicWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassMusicWidget.swift; sourceTree = "<group>"; };
 		432CB8F02F8DCAD000D5FE00 /* LiquidGlassWidgetWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassWidgetWindow.swift; sourceTree = "<group>"; };
@@ -389,6 +391,7 @@
 		1113ABBF2E80E27000EC13B2 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				4329964E2F975EAF00CBBC90 /* ImageConverter.swift */,
 				1194E87B2EA19E09009C82D6 /* ImageProcessingService.swift */,
 				118EBE282E946B3F00D54B5A /* ShareServiceFinder.swift */,
 				1100292D2E86940F00035A57 /* QuickShareService.swift */,
@@ -987,6 +990,7 @@
 				149E0B9A2C737D40006418B1 /* WebcamView.swift in Sources */,
 				1471639A2C5D35FF0068B555 /* MusicManager.swift in Sources */,
 				B1B112932C6A577E00093D8F /* MouseTracker.swift in Sources */,
+				4329964F2F975EB300CBBC90 /* ImageConverter.swift in Sources */,
 				43D122D92F8D0FCE00A145E3 /* LockNotchOverlay.swift in Sources */,
 				B1C448962C9712C4001F0858 /* ActionBar.swift in Sources */,
 				43494D4E2F90EF57002CB138 /* MediaOutputVolumeViewModel.swift in Sources */,
@@ -1077,6 +1081,7 @@
 		11F7485E2EC9AABA00F841DB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				AUTOMATION_APPLE_EVENTS = NO;
 				CODE_SIGN_ENTITLEMENTS = BoringNotchXPCHelper/BoringNotchXPCHelper.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
@@ -1084,6 +1089,13 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 271;
 				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BoringNotchXPCHelper/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = BoringNotchXPCHelper;
@@ -1093,6 +1105,12 @@
 				PRODUCT_BUNDLE_IDENTIFIER = theboringteam.boringnotch.BoringNotchXPCHelper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
+				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
+				RUNTIME_EXCEPTION_ALLOW_JIT = NO;
+				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = NO;
+				RUNTIME_EXCEPTION_DEBUGGING_TOOL = NO;
+				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = NO;
+				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = NO;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -1102,6 +1120,7 @@
 		11F7485F2EC9AABA00F841DB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				AUTOMATION_APPLE_EVENTS = NO;
 				CODE_SIGN_ENTITLEMENTS = BoringNotchXPCHelper/BoringNotchXPCHelper.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
@@ -1109,6 +1128,13 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 271;
 				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BoringNotchXPCHelper/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = BoringNotchXPCHelper;
@@ -1118,6 +1144,12 @@
 				PRODUCT_BUNDLE_IDENTIFIER = theboringteam.boringnotch.BoringNotchXPCHelper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
+				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
+				RUNTIME_EXCEPTION_ALLOW_JIT = NO;
+				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = NO;
+				RUNTIME_EXCEPTION_DEBUGGING_TOOL = NO;
+				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = NO;
+				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = NO;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
