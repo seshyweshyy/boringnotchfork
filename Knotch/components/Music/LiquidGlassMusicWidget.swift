@@ -33,154 +33,160 @@ struct LiquidGlassMusicWidget: View {
     @State private var showLockScreenVolume: Bool = false
 
     var body: some View {
-        GlassEffectContainer {
-            VStack(alignment: isExpanded ? .center : .leading, spacing: 0) {
-                
-                // ── Top row: album art + song info + visualiser ───────────────
-                HStack(alignment: .center, spacing: 12) {
-                    if !isExpanded { albumArtThumbnail }
-                    
-                    VStack(alignment: isExpanded ? .center : .leading, spacing: 3) {
-                        MarqueeText(
-                            .constant(musicManager.songTitle.isEmpty ? "Not Playing" : musicManager.songTitle),
-                            font: .headline,
-                            nsFont: .headline,
-                            textColor: .white,
-                            frameWidth: isExpanded ? 260 : 180
-                        )
-                        .fontWeight(.semibold)
-                        .id("title-\(isExpanded)")
-                        
-                        MarqueeText(
-                            .constant(musicManager.artistName.isEmpty ? "—" : musicManager.artistName),
-                            font: .subheadline,
-                            nsFont: .subheadline,
-                            textColor: playerColorTinting
+        if #available(macOS 26.0, *) {
+            GlassEffectContainer {
+                innerContent
+                    .glassEffect(.regular, in: .rect(cornerRadius: 22))
+                    .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                    .overlay(topGradientOverlay)
+                    .overlay(topBorderOverlay)
+                    .shadow(color: .white.opacity(isExpanded ? 0.12 : 0), radius: 12, x: 0, y: 0)
+                    .overlay(bottomBorderOverlay)
+                    .shadow(color: .black.opacity(0.22), radius: 30, x: 0, y: 12)
+            }
+            .onChange(of: musicManager.artFlipSignal) { _, signal in flipArt(signal) }
+        } else {
+            innerContent
+                .background(
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .fill(.black.opacity(0.55))
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                .overlay(topGradientOverlay)
+                .overlay(topBorderOverlay)
+                .shadow(color: .white.opacity(isExpanded ? 0.12 : 0), radius: 12, x: 0, y: 0)
+                .overlay(bottomBorderOverlay)
+                .shadow(color: .black.opacity(0.22), radius: 30, x: 0, y: 12)
+                .onChange(of: musicManager.artFlipSignal) { _, signal in flipArt(signal) }
+        }
+    }
+
+    @ViewBuilder
+    private var innerContent: some View {
+        VStack(alignment: isExpanded ? .center : .leading, spacing: 0) {
+            // ── Top row ──
+            HStack(alignment: .center, spacing: 12) {
+                if !isExpanded { albumArtThumbnail }
+                VStack(alignment: isExpanded ? .center : .leading, spacing: 3) {
+                    MarqueeText(
+                        .constant(musicManager.songTitle.isEmpty ? "Not Playing" : musicManager.songTitle),
+                        font: .headline,
+                        nsFont: .headline,
+                        textColor: .white,
+                        frameWidth: isExpanded ? 260 : 180
+                    )
+                    .fontWeight(.semibold)
+                    .id("title-\(isExpanded)")
+                    MarqueeText(
+                        .constant(musicManager.artistName.isEmpty ? "—" : musicManager.artistName),
+                        font: .subheadline,
+                        nsFont: .subheadline,
+                        textColor: playerColorTinting
                             ? Color(nsColor: musicManager.avgColor).ensureMinimumBrightness(factor: 0.6)
                             : Color.white.opacity(0.65),
-                            frameWidth: 180
-                        )
-                        .id("artist-\(isExpanded)")
-                    }
-                    .frame(maxWidth: .infinity)
-                    
-                    Spacer()
-                    
-                    // Visualiser (same as closed notch)
-                    AudioSpectrumView(isPlaying: $musicManager.isPlaying)
-                        .frame(width: 16, height: 12)
-                        .colorMultiply(.white)
-                        .opacity(0.50)
-                        .fixedSize()
-                        .padding(.trailing, 4)
+                        frameWidth: 180
+                    )
+                    .id("artist-\(isExpanded)")
                 }
-                .padding(.horizontal, 14)
-                .padding(.top, isExpanded ? 12 : 14)
-                
-                // ── Progress bar ──────────────────────────────────────────────
-                TimelineView(.animation(minimumInterval: 0.5, paused: !musicManager.isPlaying)) { timeline in
-                    MusicSliderView(
-                        sliderValue: $sliderValue,
-                        duration: $musicManager.songDuration,
-                        lastDragged: $lastDragged,
-                        color: musicManager.avgColor,
-                        dragging: $dragging,
-                        currentDate: timeline.date,
-                        timestampDate: musicManager.timestampDate,
-                        elapsedTime: musicManager.elapsedTime,
-                        playbackRate: musicManager.playbackRate,
-                        isPlaying: musicManager.isPlaying
-                    ) { newValue in
-                        MusicManager.shared.seek(to: newValue)
-                    }
-                    .frame(height: 36)
-                    .colorMultiply(Color.white)
-                }
-                .onAppear {
-                    let target = MusicManager.shared.estimatedPlaybackPosition(at: Date())
-                    withAnimation(.easeOut(duration: 0.4)) {
-                        sliderValue = target
-                    }
-                }
-                .padding(.horizontal, 14)
-                .padding(.top, 4)
-                
-                // ── Transport controls ────────────────────────────────────────
-                MusicSlotToolbar(lockScreenVolumeVisible: $showLockScreenVolume)
-                    .padding(.bottom, 8)
-                
-                if showLockScreenVolume {
-                    LockScreenVolumeSlider()
-                        .padding(.horizontal, 14)
-                        .padding(.bottom, 10)
-                        .transition(.scale(scale: 0.97, anchor: .top).combined(with: .opacity))
-                }
+                .frame(maxWidth: .infinity)
+                Spacer()
+                AudioSpectrumView(isPlaying: $musicManager.isPlaying)
+                    .frame(width: 16, height: 12)
+                    .colorMultiply(.white)
+                    .opacity(0.50)
+                    .fixedSize()
+                    .padding(.trailing, 4)
             }
-            .frame(width: 320)
-            .animation(.easeInOut(duration: 0.22), value: showLockScreenVolume)
-            .glassEffect(.regular, in: .rect(cornerRadius: 22))
-            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .fill(
-                        LinearGradient(
-                            stops: [
-                                .init(color: .white.opacity(isExpanded ? 0.18 : 0.10), location: 0),
-                                .init(color: .white.opacity(isExpanded ? 0.06 : 0.03), location: 0.3),
-                                .init(color: .clear, location: 0.6),
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-                    .allowsHitTesting(false)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .strokeBorder(
-                        LinearGradient(
-                            stops: [
-                                .init(color: .white.opacity(isExpanded ? 0.55 : 0.22), location: 0),
-                                .init(color: .white.opacity(isExpanded ? 0.15 : 0.05), location: 0.5),
-                                .init(color: .clear, location: 1),
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        ),
-                        lineWidth: 2
-                    )
-                    .allowsHitTesting(false)
-            )
-            // Outer glow — makes the widget feel lit from outside when expanded
-            .shadow(color: .white.opacity(isExpanded ? 0.12 : 0), radius: 12, x: 0, y: 0)
-            // Bottom edge light — simulates light bouncing off a surface below
-            .overlay(
-                RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .strokeBorder(
-                        LinearGradient(
-                            stops: [
-                                .init(color: .clear, location: 0.5),
-                                .init(color: .white.opacity(isExpanded ? 0.35 : 0), location: 1),
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        ),
-                        lineWidth: 2.5
-                    )
-                    .allowsHitTesting(false)
-            )
-            .shadow(color: .black.opacity(0.22), radius: 30, x: 0, y: 12)
-        }
-        // ── Album art flip ────────────────────────────────────────────────
-        .onChange(of: musicManager.artFlipSignal) { _, signal in
-            let dir: Double = signal.direction == .forward ? 1 : -1
-            withAnimation(.easeIn(duration: 0.15)) { rotationDegrees = dir * 90 }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                displayedArt = signal.art
-                rotationDegrees = dir * -90
-                withAnimation(.easeOut(duration: 0.15)) { rotationDegrees = 0 }
+            .padding(.horizontal, 14)
+            .padding(.top, isExpanded ? 12 : 14)
+
+            // ── Progress bar ──
+            TimelineView(.animation(minimumInterval: 0.5, paused: !musicManager.isPlaying)) { timeline in
+                MusicSliderView(
+                    sliderValue: $sliderValue,
+                    duration: $musicManager.songDuration,
+                    lastDragged: $lastDragged,
+                    color: musicManager.avgColor,
+                    dragging: $dragging,
+                    currentDate: timeline.date,
+                    timestampDate: musicManager.timestampDate,
+                    elapsedTime: musicManager.elapsedTime,
+                    playbackRate: musicManager.playbackRate,
+                    isPlaying: musicManager.isPlaying
+                ) { newValue in
+                    MusicManager.shared.seek(to: newValue)
+                }
+                .frame(height: 36)
+                .colorMultiply(Color.white)
+            }
+            .onAppear {
+                let target = MusicManager.shared.estimatedPlaybackPosition(at: Date())
+                withAnimation(.easeOut(duration: 0.4)) { sliderValue = target }
+            }
+            .padding(.horizontal, 14)
+            .padding(.top, 4)
+
+            // ── Transport controls ──
+            MusicSlotToolbar(lockScreenVolumeVisible: $showLockScreenVolume)
+                .padding(.bottom, 8)
+
+            if showLockScreenVolume {
+                LockScreenVolumeSlider()
+                    .padding(.horizontal, 14)
+                    .padding(.bottom, 10)
+                    .transition(.scale(scale: 0.97, anchor: .top).combined(with: .opacity))
             }
         }
+        .frame(width: 320)
+        .animation(.easeInOut(duration: 0.22), value: showLockScreenVolume)
+    }
+
+    private func flipArt(_ signal: ArtFlipSignal) {
+        let dir: Double = signal.direction == .forward ? 1 : -1
+        withAnimation(.easeIn(duration: 0.15)) { rotationDegrees = dir * 90 }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            displayedArt = signal.art
+            rotationDegrees = dir * -90
+            withAnimation(.easeOut(duration: 0.15)) { rotationDegrees = 0 }
+        }
+    }
+
+    @ViewBuilder private var topGradientOverlay: some View {
+        RoundedRectangle(cornerRadius: 22, style: .continuous)
+            .fill(LinearGradient(
+                stops: [
+                    .init(color: .white.opacity(isExpanded ? 0.18 : 0.10), location: 0),
+                    .init(color: .white.opacity(isExpanded ? 0.06 : 0.03), location: 0.3),
+                    .init(color: .clear, location: 0.6),
+                ],
+                startPoint: .top, endPoint: .bottom
+            ))
+            .allowsHitTesting(false)
+    }
+
+    @ViewBuilder private var topBorderOverlay: some View {
+        RoundedRectangle(cornerRadius: 22, style: .continuous)
+            .strokeBorder(LinearGradient(
+                stops: [
+                    .init(color: .white.opacity(isExpanded ? 0.55 : 0.22), location: 0),
+                    .init(color: .white.opacity(isExpanded ? 0.15 : 0.05), location: 0.5),
+                    .init(color: .clear, location: 1),
+                ],
+                startPoint: .top, endPoint: .bottom
+            ), lineWidth: 2)
+            .allowsHitTesting(false)
+    }
+
+    @ViewBuilder private var bottomBorderOverlay: some View {
+        RoundedRectangle(cornerRadius: 22, style: .continuous)
+            .strokeBorder(LinearGradient(
+                stops: [
+                    .init(color: .clear, location: 0.5),
+                    .init(color: .white.opacity(isExpanded ? 0.35 : 0), location: 1),
+                ],
+                startPoint: .top, endPoint: .bottom
+            ), lineWidth: 2.5)
+            .allowsHitTesting(false)
     }
 
     private var albumArtThumbnail: some View {
