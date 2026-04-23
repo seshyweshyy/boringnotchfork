@@ -11,6 +11,7 @@ import Defaults
 import KeyboardShortcuts
 import Sparkle
 import SwiftUI
+import AlbumArtBackgroundWindow
 
 @main
 struct DynamicNotchApp: App {
@@ -96,7 +97,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
               NSWorkspace.shared.runningApplications.contains(where: { $0.bundleIdentifier == bundleID }) else { return }
         let screen = window?.screen ?? NSScreen.main ?? NSScreen.screens[0]
         LiquidGlassWidgetWindowController.shared.show(on: screen)
-        AlbumArtBackgroundWindowController.shared.prepare(on: screen)
+        let colorPublisher = MusicManager.shared.$artFlipSignal
+            .map { $0.art }
+            .flatMap { image -> AnyPublisher<[Color], Never> in
+                Future { promise in
+                    image.dominantColors(count: 3) { nsColors in
+                        let colors = nsColors.map { Color(nsColor: $0) }
+                        promise(.success(colors))
+                    }
+                }.eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+        AlbumArtBackgroundWindowController.shared.prepare(on: screen, colorPublisher: colorPublisher)
     }
 
     @MainActor

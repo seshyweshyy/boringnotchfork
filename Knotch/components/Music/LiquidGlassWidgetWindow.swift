@@ -14,6 +14,7 @@
 import AppKit
 import SwiftUI
 import Defaults
+import AlbumArtBackgroundWindow
 
 class LiquidGlassWidgetWindow: BoringNotchSkyLightWindow {
     override init(

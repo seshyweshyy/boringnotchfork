@@ -107,7 +107,6 @@
 		14E9FEAE2C7325770062E83F /* Button+Bouncing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14E9FEAD2C7325770062E83F /* Button+Bouncing.swift */; };
 		14FC6E502C7DED5600C7BEA5 /* DataTypes+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14FC6E4F2C7DED5600C7BEA5 /* DataTypes+Extensions.swift */; };
 		43130CB62F8F37EF00BA14A1 /* ExpandedAlbumArtView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43130CB52F8F37EE00BA14A1 /* ExpandedAlbumArtView.swift */; };
-		43130CB82F8F3D7500BA14A1 /* AlbumArtBackgroundWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43130CB72F8F3D7400BA14A1 /* AlbumArtBackgroundWindow.swift */; };
 		431EB9F92F91B17E0075616F /* lock-unlock.json in Resources */ = {isa = PBXBuildFile; fileRef = 431EB9F82F91B17E0075616F /* lock-unlock.json */; };
 		4329964F2F975EB300CBBC90 /* ImageConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4329964E2F975EAF00CBBC90 /* ImageConverter.swift */; };
 		432A89E02F8A7C7500237ABF /* BottomRoundedRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432A89DF2F8A7C7500237ABF /* BottomRoundedRectangle.swift */; };
@@ -115,6 +114,7 @@
 		432CB8F12F8DCAD900D5FE00 /* LiquidGlassWidgetWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432CB8F02F8DCAD000D5FE00 /* LiquidGlassWidgetWindow.swift */; };
 		43494D4C2F90EF28002CB138 /* AudioRouteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43494D4B2F90EF22002CB138 /* AudioRouteManager.swift */; };
 		43494D4E2F90EF57002CB138 /* MediaOutputVolumeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43494D4D2F90EF56002CB138 /* MediaOutputVolumeViewModel.swift */; };
+		43ADED322F99E14300060F82 /* AlbumArtBackgroundWindow in Frameworks */ = {isa = PBXBuildFile; productRef = 43ADED312F99E14300060F82 /* AlbumArtBackgroundWindow */; };
 		43B1966B2F96DF4B00D97335 /* Knotch.icon in Resources */ = {isa = PBXBuildFile; fileRef = 43B1966A2F96DF4B00D97335 /* Knotch.icon */; };
 		43D11EA92F978592007FECCE /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 43D11EA82F978592007FECCE /* ZIPFoundation */; };
 		43D122D92F8D0FCE00A145E3 /* LockNotchOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D122D82F8D0FC600A145E3 /* LockNotchOverlay.swift */; };
@@ -288,7 +288,6 @@
 		14E9FEAD2C7325770062E83F /* Button+Bouncing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Button+Bouncing.swift"; sourceTree = "<group>"; };
 		14FC6E4F2C7DED5600C7BEA5 /* DataTypes+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataTypes+Extensions.swift"; sourceTree = "<group>"; };
 		43130CB52F8F37EE00BA14A1 /* ExpandedAlbumArtView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandedAlbumArtView.swift; sourceTree = "<group>"; };
-		43130CB72F8F3D7400BA14A1 /* AlbumArtBackgroundWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumArtBackgroundWindow.swift; sourceTree = "<group>"; };
 		431EB9F82F91B17E0075616F /* lock-unlock.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "lock-unlock.json"; sourceTree = "<group>"; };
 		4329964E2F975EAF00CBBC90 /* ImageConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageConverter.swift; sourceTree = "<group>"; };
 		432A89DF2F8A7C7500237ABF /* BottomRoundedRectangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomRoundedRectangle.swift; sourceTree = "<group>"; };
@@ -361,6 +360,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				43ADED322F99E14300060F82 /* AlbumArtBackgroundWindow in Frameworks */,
 				111BEA5F2ED07A340079DD4E /* MacroVisionKit in Frameworks */,
 				9A987A102C73CA8D005CA465 /* Collections in Frameworks */,
 				1194E8852EA57D23009C82D6 /* SkyLightWindow in Frameworks */,
@@ -725,7 +725,6 @@
 		B186542E2C6F453B000B926A /* Music */ = {
 			isa = PBXGroup;
 			children = (
-				43130CB72F8F3D7400BA14A1 /* AlbumArtBackgroundWindow.swift */,
 				43130CB52F8F37EE00BA14A1 /* ExpandedAlbumArtView.swift */,
 				432CB8F02F8DCAD000D5FE00 /* LiquidGlassWidgetWindow.swift */,
 				432CB8EE2F8DC2FB00D5FE00 /* LiquidGlassMusicWidget.swift */,
@@ -850,6 +849,7 @@
 				111BEA5E2ED07A340079DD4E /* MacroVisionKit */,
 				111BEA6E2ED166E20079DD4E /* MacroVisionKit */,
 				43D11EA82F978592007FECCE /* ZIPFoundation */,
+				43ADED312F99E14300060F82 /* AlbumArtBackgroundWindow */,
 			);
 			productName = dynamicNotch;
 			productReference = 14CEF4122C5CAED300855D72 /* Knotch.app */;
@@ -896,6 +896,7 @@
 				111BE95B2ECD71E10079DD4E /* XCRemoteSwiftPackageReference "AsyncXPCConnection" */,
 				111BEA6D2ED166E20079DD4E /* XCRemoteSwiftPackageReference "MacroVisionKit" */,
 				43D11EA72F978592007FECCE /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
+				43ADED302F99DFDD00060F82 /* XCRemoteSwiftPackageReference "AlbumArtBackgroundWindow" */,
 			);
 			productRefGroup = 14CEF4132C5CAED300855D72 /* Products */;
 			projectDirPath = "";
@@ -1019,7 +1020,6 @@
 				B17266E32C65F7FB0031BA0D /* WhatsNewView.swift in Sources */,
 				14C08BB62C8DE42D000F8AA0 /* CalendarManager.swift in Sources */,
 				14D570CD2C5F4BB70011E668 /* BoringBattery.swift in Sources */,
-				43130CB82F8F3D7500BA14A1 /* AlbumArtBackgroundWindow.swift in Sources */,
 				B10F84A32C6C9596009F3026 /* TestView.swift in Sources */,
 				1443E7F32C609DCE0027C1FC /* matters.swift in Sources */,
 				11C5E3162DFE88510065821E /* SettingsView.swift in Sources */,
@@ -1324,7 +1324,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = seshyweshyy.Knotch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1377,7 +1377,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = seshyweshyy.Knotch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1472,6 +1472,14 @@
 				minimumVersion = 2.8.0;
 			};
 		};
+		43ADED302F99DFDD00060F82 /* XCRemoteSwiftPackageReference "AlbumArtBackgroundWindow" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/seshyweshyy/AlbumArtBackgroundWindow.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		43D11EA72F978592007FECCE /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/weichsel/ZIPFoundation";
@@ -1560,6 +1568,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 14D0321B2C68F3350096E6A1 /* XCRemoteSwiftPackageReference "Sparkle" */;
 			productName = Sparkle;
+		};
+		43ADED312F99E14300060F82 /* AlbumArtBackgroundWindow */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 43ADED302F99DFDD00060F82 /* XCRemoteSwiftPackageReference "AlbumArtBackgroundWindow" */;
+			productName = AlbumArtBackgroundWindow;
 		};
 		43D11EA82F978592007FECCE /* ZIPFoundation */ = {
 			isa = XCSwiftPackageProductDependency;

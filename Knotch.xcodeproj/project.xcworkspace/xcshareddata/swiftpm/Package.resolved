@@ -1,6 +1,15 @@
 {
-  "originHash" : "e694deaf41312ddd794bfe3c2645137c818358b16c3bf2dd1709e46b995df9d4",
+  "originHash" : "7a998ca8814a9e87c8bc748aefa5b7218c0632bbcbf7aa172f1de62756e5d116",
   "pins" : [
+    {
+      "identity" : "albumartbackgroundwindow",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/seshyweshyy/AlbumArtBackgroundWindow.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "e922fc685248ab9d899228eea875dca1b4b944b8"
+      }
+    },
     {
       "identity" : "asyncxpcconnection",
       "kind" : "remoteSourceControl",
@@ -69,8 +78,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Lakr233/SkyLightWindow",
       "state" : {
-        "revision" : "b7bd99f62a0673a99bed4bfd31098ca1dcdd10eb",
-        "version" : "1.0.0"
+        "branch" : "main",
+        "revision" : "4a7e8628c85e6b2ec429b57657a556a2171a4864"
       }
     },
     {
