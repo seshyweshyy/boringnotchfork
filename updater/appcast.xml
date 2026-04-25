@@ -1,0 +1,14 @@
+<?xml version="1.0" standalone="yes"?>
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
+    <channel>
+        <title>Knotch</title>
+        <item>
+            <title>1.2.0</title>
+            <pubDate>Wed, 22 Apr 2026 16:18:02 +1000</pubDate>
+            <sparkle:version>4</sparkle:version>
+            <sparkle:shortVersionString>1.2.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <enclosure url="https://github.com/seshyweshyy/knotchapp/releases/latest/download/Knotch.zip" length="9658279" type="application/octet-stream" sparkle:edSignature="cHw8FkEksNZ7pNmFnuWWtqtVLiplvTEYi19C9zb5J7KvjqOoexK8mq9Hfap1kBfJRWHpw5+C4CdHF8JbnIuIBA=="/>
+        </item>
+    </channel>
+</rss>
