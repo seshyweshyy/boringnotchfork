@@ -20,8 +20,8 @@
 
 ## Images
 <div align="center">
-<img height="135" alt="Knotch Home View" src="https://github.com/user-attachments/assets/b0111f67-1c77-4f4e-8aad-3c5087cfb778" />
-<img height="140" alt="Knotch Tray View" src="https://github.com/user-attachments/assets/4e86af18-221b-4178-b25d-2d142e89982c" />
+<img height="120" alt="Knotch Home View" src="https://github.com/user-attachments/assets/b0111f67-1c77-4f4e-8aad-3c5087cfb778" />
+<img height="120" alt="Knotch Tray View" src="https://github.com/user-attachments/assets/4e86af18-221b-4178-b25d-2d142e89982c" />
 <img height="500" alt="Screenshot 2026-04-25 at 7 01 15 pm" src="https://github.com/user-attachments/assets/560929f6-91df-4010-b0fc-8598667699ca" />
 <img height="500" alt="Screenshot 2026-04-25 at 7 00 08 pm" src="https://github.com/user-attachments/assets/d1297e35-8653-414d-93df-becbf64f8f2d" />
 </div>
