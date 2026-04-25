@@ -101,8 +101,8 @@ Unzip the `.zip` file and move **Knotch** to your `/Applications` folder.
 - [x] System HUD replacement (volume, brightness, backlight) 🎚️
 - [x] Lock screen widgets 🔒
 - [x] Customizable layout options 🛠️
-- [ ] Bluetooth live activity (connect/disconnect) 🎧
-- [ ] Weather widget ⛅
+- [x] Bluetooth live activity (connect/disconnect) 🎧
+- [ ] Lock screen widgets ⛅
 
 ---
 
