@@ -88,7 +88,7 @@ Unzip the `.zip` file and move **Knotch** to your `/Applications` folder.
 > <img height="200" alt="SCR-20260427-cdyy" src="https://github.com/user-attachments/assets/b8775f40-4667-45c0-a585-1acce746b792" />
 > <img height="300" alt="SCR-20260427-cegh" src="https://github.com/user-attachments/assets/8087b8b8-e32f-4d60-a75a-68e08d95ade1" />
 > <img height="300" alt="SCR-20260427-cemt" src="https://github.com/user-attachments/assets/53ab3462-19d8-47b8-8daa-da202af0bbe4" />
-***Knotch does not contain any pieces of malware or viruses, and is intended to be a simple app.***
+***Knotch does not contain any pieces of malware, and is intended to be a simple app.***
 
 ---
 
